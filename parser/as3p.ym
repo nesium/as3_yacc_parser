@@ -1,0 +1,608 @@
+%{
+
+#include <stdio.h>
+#include <stdlib.h>
+#import "Node.h"
+#import "PackageNode.h"
+#define YYDEBUG 1
+
+Node *yyLastParsedNode = nil;
+extern yylineno;
+extern void yyerror(char *s);
+extern int yylex();
+extern int yyYYINPUT(char *buffer, int maxSize);
+
+%}
+
+%union
+{
+	struct Node *nodeValue;
+}
+
+%token ABSTRACT
+%token ADDASN
+%token AS
+%token BANDASN
+%token BOOLEAN
+%token BORASN
+%token EACH
+%token STANDARD
+%token REST
+%token LET
+%token BREAK
+%token BWLSHIFT
+%token BWLSHIFTASN
+%token BWRSHIFT
+%token BWRSHIFTASN
+%token BWURSHIFT
+%token BWURSHIFTASN
+%token BYTE
+%token CASE
+%token CATCH
+%token CHAR
+%token CLASS
+%token CONST
+%token CONTINUE
+%token DEBUGGER
+%token DECREMENT
+%token DEFAULT
+%token DELETE
+%token DESCENDANT
+%token DIVASN
+%token DO
+%token DOUBLE
+%token DYNAMIC
+%token ELSE
+%token ENUM
+%token EQ
+%token EXPORT
+%token EXTENDS
+%token T_FALSE
+%token FINAL
+%token FINALLY
+%token FLOAT
+%token FOR
+%token FUNCTION
+%token GENERATOR
+%token GET
+%token GOTO
+%token GTE
+%token HEX
+%token IDENT
+%token IF
+%token IMPLEMENTS
+%token IMPORT
+%token IN
+%token INCLUDE
+%token INCREMENT
+%token INSTANCEOF
+%token INT
+%token INTERFACE
+%token INTERNAL
+%token IS
+%token LAND
+%token LANDASN
+%token LIKE
+%token LONG
+%token LOR
+%token LORASN
+%token LTE
+%token MODASN
+%token MULASN
+%token NAMESPACE
+%token NATIVE
+%token NE
+%token NEW
+%token ASNULL
+%token NUMBER
+%token OVERRIDE
+%token PACKAGE
+%token PRIVATE
+%token PROTECTED
+%token PROTO
+%token PUBLIC
+%token QUALIFIED_IDENT
+%token RETURN
+%token SCOPE
+%token SEQ
+%token SET
+%token SHORT
+%token SNE
+%token STATIC
+%token STRICT
+%token STRING
+%token SUBASN
+%token SUPER
+%token SWITCH
+%token SYNCHRONIZED
+%token THIS
+%token THROW
+%token THROWS
+%token TRANSIENT
+%token T_TRUE
+%token TRY
+%token TYPE
+%token TYPEOF
+%token UINT
+%token UNDEFINED
+%token USE
+%token VAR
+%token VOID
+%token VOLATILE
+%token WHILE
+%token WITH
+%token XORASN
+%token YIELD
+
+%type <nodeValue> package_definition
+%type <nodeValue> identifier
+%type <nodeValue> qualified_identifier
+
+%%
+
+program
+	: package_definition
+	;
+	
+package_definition
+	: PACKAGE qualified_identifier package_body	{$$ = [PackageNode packageNodeWithIdentifier:$2];
+													yyLastParsedNode = $$;}
+	;
+
+package_body
+	: '{' '}'
+	| '{' package_statement_list '}'
+	;
+	
+package_statement_list
+	: package_statement
+	| package_statement_list package_statement
+	;
+	
+package_statement
+	: class_definition
+	| import_statement
+	;
+	
+import_statement
+	: IMPORT qualified_identifier ';'
+	| IMPORT qualified_identifier '.' '*'
+	;
+	
+class_definition
+	: class_attribute CLASS identifier class_body
+	| class_attribute CLASS identifier EXTENDS qualified_identifier class_body
+	| class_attribute CLASS identifier IMPLEMENTS interface_list class_body
+	| class_attribute CLASS identifier EXTENDS qualified_identifier IMPLEMENTS interface_list class_body
+	;
+	
+class_attribute
+	: /* empty */
+	| DYNAMIC
+	| FINAL
+	| INTERNAL
+	| PUBLIC
+	;
+	
+interface_list
+	: qualified_identifier
+	| interface_list ',' qualified_identifier
+	;
+	
+class_body
+	: '{' '}'
+	| '{' class_statement_list '}'
+	;
+	
+class_statement_list
+	: class_statement
+	| class_statement_list class_statement
+	;
+
+class_statement
+	: method_definition
+	| property_definition
+	;
+
+property_definition
+	: class_property_attribute VAR parameter
+	| class_property_attribute VAR parameter ';'
+	| class_property_attribute STATIC VAR parameter
+	| class_property_attribute STATIC VAR parameter ';'
+	;
+
+class_property_attribute
+	: /* empty */
+	| INTERNAL
+	| PRIVATE
+	| PROTECTED
+	| PUBLIC
+	| STATIC
+	;
+	
+opt_override
+	: /* empty */ 
+	| OVERRIDE
+	;
+
+method_definition
+	: class_property_attribute opt_override FUNCTION identifier '(' ')' compound_statement
+	| class_property_attribute opt_override FUNCTION identifier '(' ')' return_type compound_statement
+	| class_property_attribute opt_override FUNCTION identifier '(' argument_list ')' compound_statement
+	| class_property_attribute opt_override FUNCTION identifier '(' argument_list ')' return_type compound_statement
+	| class_property_attribute opt_override FUNCTION GET identifier '(' ')' return_type compound_statement
+	| class_property_attribute opt_override FUNCTION SET identifier '(' argument_list ')' compound_statement
+	| class_property_attribute opt_override FUNCTION SET identifier '(' argument_list ')' ':' VOID compound_statement
+	;
+
+array_construction
+	: '[' ']'
+	| '[' array_argument_list ']'
+	;
+	
+array_argument_list
+	: assignment_expression
+	| array_argument_list ',' assignment_expression
+	;
+	
+object_construction
+	: '{' '}'
+	| '{' object_argument_list '}'
+	;
+	
+object_argument
+	: identifier ':' assignment_expression
+	;
+	
+object_argument_list
+	: object_argument
+	| object_argument_list ',' object_argument
+	;
+	
+argument_list
+	: argument
+	| argument_list ',' argument
+	;
+	
+argument
+	: identifier initialization
+	| identifier ':' qualified_identifier initialization
+	| REST identifier /* TODO: ensure that rest is the last param */
+	;
+	
+return_type
+	: ':' qualified_identifier
+	| ':' VOID
+	;
+
+identifier
+	: IDENT
+	| SUPER
+	| THIS
+	| '@' e4x_attributed_identifier_list
+	| '*' /* e4x */
+	;
+	
+qualified_identifier
+	: identifier
+	| qualified_identifier '.' identifier {[(IdentifierNode *)yyLastParsedNode addIdentifier:$3];
+													yyLastParsedNode = $$;}
+	;
+	
+number_literal
+	: NUMBER
+	| UINT
+	| INT
+	| HEX
+	;
+	
+primary_expression
+	: ASNULL
+	| T_TRUE
+	| T_FALSE
+	| UNDEFINED
+	| THIS
+	| SUPER
+	| number_literal
+	| STRING
+	| identifier
+	| e4x_tag_list
+	| concatenated_braced_expression
+	/* | regexp_initialiser */
+	/* | object_initialiser*/
+	/* | function_expression */
+	/* | name_expression*/
+	;
+
+concatenated_braced_expression
+	: braced_expression
+	| concatenated_braced_expression '.' postfix_expression
+	;
+
+braced_expression
+	: '(' expression ')'
+	| '(' ')'
+	;
+
+e4x_attributed_identifier
+	: qualified_identifier
+	| '[' expression ']'
+	| '*'
+	;
+	
+e4x_attributed_identifier_list
+	: e4x_attributed_identifier
+	| e4x_attributed_identifier e4x_attributed_identifier_list
+	;
+	
+e4x_tag
+	: '<' qualified_identifier '>'
+	| '<' qualified_identifier '/' '>'
+	;
+	
+e4x_tag_list
+	: e4x_tag
+	| e4x_tag_list e4x_tag
+	;
+	
+postfix_expression
+	: primary_expression
+	| lvalue_expression
+	| NEW postfix_expression
+	| array_construction
+	| object_construction
+	| postfix_expression '(' ')'
+	| postfix_expression '(' comma_expression ')'
+	| postfix_expression concatenated_braced_expression
+	| FUNCTION
+	;
+
+comma_expression
+	: expression
+	| comma_expression ',' expression
+	;
+
+parameter
+	: variable initialization
+	;
+	
+basic_parameter_list
+	: parameter
+	| basic_parameter_list ',' parameter
+	;
+	
+parameter_list
+	: /* empty */
+	| basic_parameter_list
+	| basic_parameter_list REST
+	;
+	
+initialization
+	: /* empty */
+	| '=' expression
+	;
+	
+variable
+	: identifier
+	| qualified_identifier
+	| identifier ':' qualified_identifier
+	| VAR identifier
+	| VAR identifier ':' qualified_identifier
+	;
+	
+lvalue_expression
+	: variable
+	| concatenated_braced_postfix_expression
+	;
+	
+braced_postfix_expression
+	: postfix_expression '[' expression ']'
+	;
+	
+concatenated_braced_postfix_expression
+	: braced_postfix_expression
+	| concatenated_braced_postfix_expression '.' postfix_expression
+	;
+	
+expression
+	: assignment_expression
+	;
+	
+unary_expression
+	: postfix_expression
+	| '+' unary_expression
+	| '-' unary_expression
+	| '~' unary_expression
+	| '!' unary_expression
+	| INCREMENT lvalue_expression
+	| DECREMENT lvalue_expression
+	| lvalue_expression INCREMENT
+	| lvalue_expression DECREMENT
+	| DELETE lvalue_expression
+	;
+
+multiplicative_expression
+	: unary_expression
+	| multiplicative_expression '*' unary_expression
+	| multiplicative_expression '/' unary_expression
+	| multiplicative_expression '%' unary_expression
+	;
+
+additive_expression
+	: multiplicative_expression
+	| additive_expression '+' multiplicative_expression
+	| additive_expression '-' multiplicative_expression
+	;
+
+shift_expression
+	: additive_expression
+	| shift_expression BWLSHIFT additive_expression
+	| shift_expression BWRSHIFT additive_expression
+	| shift_expression BWURSHIFTASN additive_expression
+	;
+
+relational_expression
+	: shift_expression
+	| relational_expression '<' shift_expression
+	| relational_expression '>' shift_expression
+	| relational_expression LTE shift_expression
+	| relational_expression GTE shift_expression
+	| relational_expression IS qualified_identifier
+	| relational_expression AS qualified_identifier
+	;
+
+equality_expression
+	: relational_expression
+	| equality_expression EQ relational_expression
+	| equality_expression SEQ relational_expression
+	| equality_expression NE relational_expression
+	| equality_expression SNE relational_expression
+	;
+
+and_expression
+	: equality_expression
+	| and_expression '&' equality_expression
+	;
+
+exclusive_or_expression
+	: and_expression
+	| exclusive_or_expression '^' and_expression
+	;
+
+inclusive_or_expression
+	: exclusive_or_expression
+	| inclusive_or_expression '|' exclusive_or_expression
+	;
+
+in_expression
+	: inclusive_or_expression
+	| in_expression IN inclusive_or_expression
+	;
+
+logical_and_expression
+	: in_expression
+	| logical_and_expression LAND equality_expression
+	;
+
+logical_or_expression
+	: logical_and_expression
+	| logical_or_expression LOR logical_and_expression
+	;
+
+conditional_expression
+	: logical_or_expression
+	| logical_or_expression '?' expression ':' conditional_expression
+	;
+
+assignment_expression
+	: conditional_expression
+	| lvalue_expression '=' assignment_expression
+	| lvalue_expression MULASN assignment_expression
+	| lvalue_expression DIVASN assignment_expression
+	| lvalue_expression MODASN assignment_expression
+	| lvalue_expression ADDASN assignment_expression
+	| lvalue_expression SUBASN assignment_expression
+	| lvalue_expression BWLSHIFTASN assignment_expression
+	| lvalue_expression BWRSHIFTASN assignment_expression
+	| lvalue_expression BWURSHIFTASN assignment_expression
+	| lvalue_expression BANDASN assignment_expression
+	| lvalue_expression XORASN assignment_expression
+	| lvalue_expression BORASN assignment_expression
+	;
+	
+statement
+	: labeled_statement
+	| compound_statement
+	| expression_statement
+	| selection_statement
+	| iteration_statement
+	| try_statement
+	| jump_statement
+	| switch_statement
+	;
+
+labeled_statement
+	: identifier ':' statement
+	;
+
+compound_statement
+	: '{' '}'
+	| '{' statement_list '}'
+	;
+
+statement_list
+	: statement
+	| statement_list statement
+	;
+
+expression_statement
+	: ';'
+	| expression ';'
+	;
+
+selection_statement
+	: IF '(' expression ')' statement
+	| IF '(' expression ')' statement ELSE statement
+	;
+	
+switch_statement
+	: SWITCH '(' expression ')' '{' case_statement_list '}'
+	;
+	
+case_statement
+	: CASE expression ':'
+	| CASE expression ':' statement
+	| DEFAULT ':'
+	| DEFAULT ':' statement
+	;
+	
+case_statement_list
+	: case_statement
+	| case_statement_list case_statement
+	;
+
+iteration_statement
+	: WHILE '(' expression ')' statement
+	| DO statement WHILE '(' expression
+	| FOR '(' statement expression_statement ')' statement
+	| FOR EACH '(' expression_statement ')' statement
+	| FOR EACH '(' variable IN expression ')' statement
+	| FOR '(' statement expression_statement expression ')' statement
+	| FOR '(' variable IN expression ')' statement
+	;
+
+jump_statement
+	: RETURN
+	| RETURN expression
+	| BREAK
+	| CONTINUE
+	| THROW expression
+	;
+
+try_statement
+	: TRY compound_statement catch_list
+	;
+
+catch_list
+	: catch_statement
+	| catch_list catch_statement
+	;
+
+catch_statement
+	:  CATCH '(' qualified_identifier ')' compound_statement
+	|  CATCH '(' qualified_identifier variable ')' compound_statement
+;
+
+%%
+
+//int yyerror(char *s)
+//{
+//	fprintf(stderr, "line %d: %s\n", yylineno, s);
+//	return 0;
+//}
+
+//int main(void)
+//{
+//	yyparse();
+//	return 0;
+//}
