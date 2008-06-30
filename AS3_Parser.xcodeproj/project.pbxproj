@@ -16,6 +16,8 @@
 		2C63857A0E15B6E800D7229C /* PackageNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6385790E15B6E800D7229C /* PackageNode.m */; };
 		2C63857E0E15B7BF00D7229C /* Node.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C63857D0E15B7BF00D7229C /* Node.m */; };
 		2C6385820E15B9CA00D7229C /* IdentifierNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6385810E15B9CA00D7229C /* IdentifierNode.m */; };
+		2CD2CD220E198AEB00D89C80 /* QualifiedIdentifierNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD2CD210E198AEB00D89C80 /* QualifiedIdentifierNode.m */; };
+		2CD2CD6D0E19903E00D89C80 /* ImportNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD2CD6C0E19903E00D89C80 /* ImportNode.m */; };
 		2F7446990DB6B7EA00F9684A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2F7446970DB6B7EA00F9684A /* MainMenu.xib */; };
 		770B37ED0679A11B001EADE2 /* AS3_Parser_DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 770B37EC0679A11B001EADE2 /* AS3_Parser_DataModel.xcdatamodel */; };
 		77C8280E06725ACE000B614F /* AS3_Parser_AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 77C8280C06725ACE000B614F /* AS3_Parser_AppDelegate.m */; };
@@ -46,6 +48,10 @@
 		2C63857D0E15B7BF00D7229C /* Node.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Node.m; sourceTree = "<group>"; };
 		2C6385800E15B9CA00D7229C /* IdentifierNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IdentifierNode.h; sourceTree = "<group>"; };
 		2C6385810E15B9CA00D7229C /* IdentifierNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IdentifierNode.m; sourceTree = "<group>"; };
+		2CD2CD200E198AEB00D89C80 /* QualifiedIdentifierNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QualifiedIdentifierNode.h; sourceTree = "<group>"; };
+		2CD2CD210E198AEB00D89C80 /* QualifiedIdentifierNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QualifiedIdentifierNode.m; sourceTree = "<group>"; };
+		2CD2CD6B0E19903E00D89C80 /* ImportNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImportNode.h; sourceTree = "<group>"; };
+		2CD2CD6C0E19903E00D89C80 /* ImportNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImportNode.m; sourceTree = "<group>"; };
 		2F7446980DB6B7EA00F9684A /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* AS3_Parser_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AS3_Parser_Prefix.pch; sourceTree = "<group>"; };
 		770B37EC0679A11B001EADE2 /* AS3_Parser_DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = AS3_Parser_DataModel.xcdatamodel; sourceTree = "<group>"; };
@@ -172,6 +178,10 @@
 				2C63857D0E15B7BF00D7229C /* Node.m */,
 				2C6385800E15B9CA00D7229C /* IdentifierNode.h */,
 				2C6385810E15B9CA00D7229C /* IdentifierNode.m */,
+				2CD2CD200E198AEB00D89C80 /* QualifiedIdentifierNode.h */,
+				2CD2CD210E198AEB00D89C80 /* QualifiedIdentifierNode.m */,
+				2CD2CD6B0E19903E00D89C80 /* ImportNode.h */,
+				2CD2CD6C0E19903E00D89C80 /* ImportNode.m */,
 			);
 			path = ast;
 			sourceTree = "<group>";
@@ -251,6 +261,8 @@
 				2C63857A0E15B6E800D7229C /* PackageNode.m in Sources */,
 				2C63857E0E15B7BF00D7229C /* Node.m in Sources */,
 				2C6385820E15B9CA00D7229C /* IdentifierNode.m in Sources */,
+				2CD2CD220E198AEB00D89C80 /* QualifiedIdentifierNode.m in Sources */,
+				2CD2CD6D0E19903E00D89C80 /* ImportNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

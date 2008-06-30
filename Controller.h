@@ -15,5 +15,6 @@
 }
 
 - (IBAction)openFile:(id)sender;
+- (void)parseFile:(NSString *)filename;
 
 @end

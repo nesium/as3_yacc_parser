@@ -15,7 +15,7 @@
 	NSMutableString *m_value;
 }
 
-- (NSString *)stringValue;
+- (NSString *)string;
 - (id)initWithCString:(const char *)cString;
 - (id)initWithQuotedCString:(const char *)cString;
 + (StringNode *)stringNodeWithCString:(const char *)cString;

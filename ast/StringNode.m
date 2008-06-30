@@ -11,6 +11,13 @@
 
 @implementation StringNode
 
+- (id)init
+{
+	self = [super init];
+	m_value = [[NSMutableString alloc] init];
+	return self;
+}
+
 - (id)initWithCString:(const char *)cString 
 {
 	self = [super init];
@@ -36,7 +43,7 @@
 	[super dealloc];
 }
 
-- (NSString *)stringValue
+- (NSString *)string
 {
 	return m_value;
 }
@@ -58,7 +65,7 @@
 
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"[StringNode] value: %@", m_value];
+	return [NSString stringWithFormat:@"[%@] value: %@", [self className], m_value];
 }
 
 @end

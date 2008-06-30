@@ -7,11 +7,15 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "Node.h"
+#import "StringNode.h"
+#import "IdentifierNode.h"
 
 
-@interface ClassNode : Node {
+@interface ClassNode : StringNode 
+{
 
 }
+
++ (ClassNode *)classNodeWithIdentifier:(IdentifierNode *)identifier;
 
 @end

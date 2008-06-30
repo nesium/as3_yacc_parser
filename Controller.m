@@ -11,6 +11,11 @@
 
 @implementation Controller
 
+- (void)awakeFromNib
+{
+	[self parseFile:@"../../test/UIComponent.as"];
+}
+
 - (IBAction)openFile:(id)sender
 {
 	int result;
@@ -24,9 +29,12 @@
 	{
 		return;
 	}
-	
-	NSString *str = [NSString stringWithContentsOfFile:[oPanel filename]];
+	[self parseFile:[oPanel filename]];
+}
 
+- (void)parseFile:(NSString *)filename
+{
+	NSString *str = [NSString stringWithContentsOfFile:filename];
 	@try
 	{
 		Node *ast = [[Parser sharedParser] parse:str];
@@ -35,7 +43,7 @@
 	@catch(NSException* exception)
 	{
 		NSLog(@"An error occured while parsing");
-	}
+	}	
 }
 
 @end

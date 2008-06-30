@@ -13,7 +13,8 @@
 
 - (void)addIdentifier:(IdentifierNode *)ident
 {
-	[m_value appendString:[ident stringValue]];
+	NSLog(@"-> add identifier: %@", ident);
+	[m_value appendString:[ident string]];
 }
 
 + (IdentifierNode *)identifierNodeWithCString:(const char *)cString

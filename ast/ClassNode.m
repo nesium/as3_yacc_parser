@@ -11,4 +11,12 @@
 
 @implementation ClassNode
 
++ (ClassNode *)classNodeWithIdentifier:(IdentifierNode *)identifier
+{
+	ClassNode *node = [[[ClassNode alloc] init] autorelease];
+	[node setValue:[identifier string] forKey:@"m_value"];
+	NSLog(@"%@", node);
+	return node;
+}
+
 @end

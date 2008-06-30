@@ -14,7 +14,7 @@
 + (PackageNode *)packageNodeWithIdentifier:(IdentifierNode *)identifier
 {
 	PackageNode *node = [[[PackageNode alloc] init] autorelease];
-	[node setValue:identifier forKey:@"m_value"];
+	[node setValue:[identifier string] forKey:@"m_value"];
 	return node;
 }
 
