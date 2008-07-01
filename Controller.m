@@ -13,7 +13,7 @@
 
 - (void)awakeFromNib
 {
-	[self parseFile:@"../../test/UIComponent.as"];
+	//[self parseFile:@"../../test/UIComponent.as"];
 }
 
 - (IBAction)openFile:(id)sender

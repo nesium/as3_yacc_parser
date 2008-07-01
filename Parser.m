@@ -14,7 +14,7 @@ void yyparse();
 void yyrestart();
 void yyreset_state();
 
-int yyYYINPUT(char* buffer,int maxSize)
+int yyYYINPUT(char* buffer, int maxSize)
 {
 	return [[Parser sharedParser] yyInputToBuffer:buffer withSize:maxSize];
 }
