@@ -18,6 +18,10 @@
 
 @implementation DropView
 
+@synthesize path=m_path;
+@synthesize action=m_action;
+@synthesize target=m_target;
+
 #pragma mark -
 #pragma mark Initialization & Deallocation
 
@@ -27,9 +31,19 @@
 	
 	m_phase = 0;
 	m_maxPhase = 12.0;
-	m_overColor = 0.5;
+	m_overColor = 0.6;
 	m_upColor = m_color = 0.75;
 	m_animationTimer = nil;
+	m_iconSize = 48;
+	m_iconView = [[NSImageView alloc] initWithFrame:
+		NSMakeRect(([self bounds].size.width - m_iconSize) / 2, 
+					([self bounds].size.height - m_iconSize) / 2, 
+					m_iconSize, m_iconSize)];
+	[m_iconView setWantsLayer:YES];
+	[m_iconView setAlphaValue:0.0];
+	[m_iconView setEditable:NO];
+	[m_iconView unregisterDraggedTypes];
+	[self addSubview:m_iconView];
 	
 	[self registerForDraggedTypes:[NSArray arrayWithObjects: NSFilenamesPboardType, nil]];
 	
@@ -109,28 +123,34 @@
 
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
 {
-//	NSPasteboard * pboard	= [sender draggingPasteboard];
-//	NSArray * types			= [NSArray arrayWithObjects: NSFilenamesPboardType, nil ];
-//	NSString * desiredType	= [pboard availableTypeFromArray: types];
-//	NSData * carriedData	= [pboard dataForType: desiredType];
-//	
-//	if ( carriedData == nil )
-//		return NO;
-//	else 
-//	{
-//		if ( [desiredType isEqualToString: NSFilenamesPboardType] )
-//		{
-//			NSArray * fileArray = [pboard propertyListForType:@"NSFilenamesPboardType"];
-//			NSString * path = [fileArray objectAtIndex:0];
-//
-//			if ( [self isValidDir: path] )
-//				return NO;
-//
-//			[self setTargetDirectory:[NSString stringWithString: path]];
-//		}
-//		else
-//			return NO;
-//	}
+	NSPasteboard *pboard = [sender draggingPasteboard];
+	NSArray *types = [NSArray arrayWithObjects: NSFilenamesPboardType, nil];
+	NSString *desiredType = [pboard availableTypeFromArray:types];
+	NSData *carriedData	= [pboard dataForType: desiredType];
+	
+	if (carriedData == nil)
+	{
+		return NO;
+	}
+	else 
+	{
+		if ([desiredType isEqualToString:NSFilenamesPboardType])
+		{
+			NSArray *fileArray = [pboard propertyListForType:@"NSFilenamesPboardType"];
+			NSString *path = [fileArray objectAtIndex:0];
+			NSImage *icon = [[NSWorkspace sharedWorkspace] iconForFile:path];
+			[m_iconView setAlphaValue:0];
+			[m_iconView setImage:icon];
+			[[m_iconView animator] setAlphaValue:1.0];
+			[self setPath:path];
+			[self sendAction:[self action] to:[self target]];
+		}
+		else
+		{
+			return NO;
+		}
+	}
+	
 	m_color = m_upColor;
 	[self stopAnimation];
 	[self setNeedsDisplay:YES];
