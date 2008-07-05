@@ -10,6 +10,11 @@ char *s;
 unsigned int comment_is_multiline;
 unsigned int in_comment = 0;
 
+int column, line, charnum;
+int col_start, line_start, charnum_start;
+void start();
+void count();
+
 #undef YY_INPUT
 #define YY_INPUT(b,r,s) (r = yyYYINPUT(b,s))
 
@@ -19,37 +24,38 @@ unsigned int in_comment = 0;
 
 %%
 
-\/\*						{                                                                  
-								if (!in_comment || !comment_is_multiline)                      
-								{                                                              
-									BEGIN COMMENT;                                             
-									comment_is_multiline = 1;                                  
-									in_comment = 1;                                            
-								}                                                              
-							}                                                                  
-\/\/						{BEGIN COMMENT; comment_is_multiline = 0; in_comment = 1;}         
-<COMMENT>\*\/				{if (comment_is_multiline) {in_comment = 0; BEGIN 0;}}             
-<COMMENT>.					/* discard */                                                      
-<COMMENT>\n					{                                                                  
-								yylineno++;                                                    
-								if (!comment_is_multiline)                                     
-								{                                                              
-									in_comment = 0;                                            
-									BEGIN 0;                                                   
-								}                                                              
-							}                                                                  
-                                                                                               
-\"|\'						{BEGIN MSTRING; s = buf; string_start = *yytext;}
-<MSTRING>\\n 				{*s++ = '\n';}
-<MSTRING>\\t 				{*s++ = '\t';}
-<MSTRING>\\\"|\\\' 			{*s++ = '\"';}
-<MSTRING>\"|\'				{                                                                  
+\/\*						{
+								if (!in_comment || !comment_is_multiline)
+								{
+									BEGIN COMMENT;
+									comment_is_multiline = 1;
+									in_comment = 1;
+									start();
+								}
+								count();
+							}
+\/\/						{start(); count(); BEGIN COMMENT; comment_is_multiline = 0; in_comment = 1;}
+<COMMENT>\*\/				{count(); if (comment_is_multiline) {in_comment = 0; BEGIN 0;}}
+<COMMENT>.					{count();}
+<COMMENT>\n					{
+								count();
+								yylineno++;
+								if (!comment_is_multiline)
+								{
+									in_comment = 0;
+									BEGIN 0;
+								}
+							}
+\"|\'						{start(); count(); BEGIN MSTRING; s = buf; string_start = *yytext;}
+<MSTRING>\\n 				{count(); *s++ = '\n';}
+<MSTRING>\\t 				{count(); *s++ = '\t';}
+<MSTRING>\\\"|\\\' 			{count(); *s++ = '\"';}
+<MSTRING>\"|\'				{
+								count();
 								if (*yytext == string_start)
 								{
 									*s = 0;
 									BEGIN 0;
-									/*printf("found '%s'\n", buf);*/
-									printf("found string\n");
 									return STRING;
 								}
 								else
@@ -62,135 +68,125 @@ unsigned int in_comment = 0;
 								printf("found invalid string!\n");
 								exit(0);
 							}
-<MSTRING>. 					{*s++ = *yytext;}
-as							{printf("found as tok\n"); return AS;}
-case						{printf("found case tok\n"); return CASE;}
-catch						{printf("found catch tok\n"); return CATCH;}
-class 						{printf("found class tok\n"); return CLASS;}
-default						{printf("found default tok\n"); return DEFAULT;}
-delete						{printf("found delete tok\n"); return DELETE;}
-do							{printf("found do tok\n"); return DO;}
-dynamic						{printf("found dynamic tok\n"); return DYNAMIC;}
-each						{printf("found each tok\n"); return EACH;}
-else						{printf("found else tok\n"); return ELSE;}
-extends						{printf("found extends token\n"); return EXTENDS;}
-false						{printf("found false tok\n"); return T_FALSE;}
-for							{printf("found for tok\n"); return FOR;}
-function					{printf("found function tok\n"); return FUNCTION;}
-generator					{printf("found generator tok\n"); return GENERATOR;}
-get							{printf("found get tok\n"); return GET;}
-if							{printf("found if tok\n"); return IF;}
-implements					{printf("found implements token\n"); return IMPLEMENTS;}
-import						{printf("found import tok\n"); return IMPORT;}
-in							{printf("found in tok\n"); return IN;}
-include						{printf("found include tok\n"); return INCLUDE;}
-instanceof					{printf("found instanceof tok\n"); return INSTANCEOF;}
-internal					{printf("found internal tok\n"); return INTERNAL;}
-is							{printf("found is tok\n"); return IS;}
-let							{printf("found let token\n"); return LET;}
-like						{printf("found like tok\n"); return LIKE;}
-namespace					{printf("found namespace tok\n"); return NAMESPACE;}
-new							{printf("found new tok\n"); return NEW;}
-null						{printf("found null token\n"); return ASNULL;}
-override					{printf("found override token\n"); return OVERRIDE;}
-package						{printf("found package tok\n"); return PACKAGE;}
-private 					{printf("found public tok\n"); return PRIVATE;}
-protected					{printf("found protected tok\n"); return PROTECTED;}
-public 						{printf("found public tok\n"); return PUBLIC;}
-return 						{printf("found return tok\n"); return RETURN;}
-set							{printf("found set tok\n"); return SET;}
-standard					{printf("found standard token\n"); return STANDARD;}
-static						{printf("found static token\n"); return STATIC;}
-strict						{printf("found strict tok\n"); return STRICT;}
-super						{printf("found super tok\n"); return SUPER;}
-switch						{printf("found switch tok\n"); return SWITCH;}
-this						{printf("found this tok\n"); return THIS;}
-true						{printf("found true tok\n"); return T_TRUE;}
-try							{printf("found try tok\n"); return TRY;}
-type						{printf("found type tok\n"); return TYPE;}
-typeof						{printf("found typeof tok\n"); return TYPEOF;}
-undefined					{printf("found undefined tok\n"); return UNDEFINED;}
-use							{printf("found use tok\n"); return USE;}
-var							{printf("found var token\n"); return VAR;}
-void						{printf("found void tok\n"); return VOID;}
-while						{printf("found while tok\n"); return WHILE;}
-with						{printf("found with token\n"); return WITH;}
-yield						{printf("found yield tok\n"); return YIELD;}
-__proto__					{printf("found __proto__ token\n"); return PROTO;}
-[a-zA-Z_$][a-zA-Z0-9_$]*	{printf("found ident %s\n", yytext); yylval.nodeValue = [IdentifierNode identifierNodeWithCString:yytext]; return IDENT;}
--?[0-9]*\.[0-9]+			{
-//								yylval = atof(yytext);
-//								printf("%f\n", atof(yytext));
-								return NUMBER;
-							}
-0[xX]([0-9A-Fa-f])+			{printf("found hexdigit\n"); return HEX;}
-[0-9]+						{
-//								yylval = atoi(yytext);
-								return UINT;
-							}
-\-?[0-9]+					{
-//								yylval = atoi(yytext);
-								return INT;
-							}
-"++"						{printf("found increment\n"); return INCREMENT;}
-"--"						{printf("found decrement\n"); return DECREMENT;}
-"%"							{printf("found %\n"); return yytext[0];}
-"+="						{printf("found addition assignment\n"); return ADDASN;}
-"/="						{printf("found division assignment\n"); return DIVASN;}
-"%="						{printf("found modulo assignment\n"); return MODASN;}
-"*="						{printf("found multiplication assignment\n"); return MULASN;}
-"-="						{printf("found substration assignment\n"); return SUBASN;}
-"&="						{printf("found and assignment\n"); return BANDASN;}
-"^="						{printf("found xor assignment\n"); return XORASN;}
-"|="						{printf("found or assignment\n"); return BORASN;}
-"&&="						{printf("found logical and assignment\n"); return LANDASN;}
-"||="						{printf("found logical or assignment\n"); return LORASN;}
-"<<"						{printf("found <<\n"); return BWLSHIFT;}
-"<<="						{printf("found <<=\n"); return BWLSHIFTASN;}
-">>="						{printf("found <<=\n"); return BWRSHIFTASN;}
-">>>="						{printf("found >>>=\n"); return BWURSHIFTASN;}
-">>"						{printf("found >>\n"); return BWRSHIFT;}                           
-">>>"						{printf("found >>>\n"); return BWURSHIFT;}                         
-"=="						{printf("found ==\n"); return EQ;}                                 
-"<="						{printf("found LTE\n"); return LTE;}                               
-">="						{printf("found GTE\n"); return GTE;}                               
-"!="						{printf("found GTE\n"); return NE;}                                
-"!=="						{printf("found SNE\n"); return SNE;}                               
-"==="						{printf("found SEQ\n"); return SEQ;}                               
-"&&"						{printf("found LAND\n"); return LAND;}                             
-"||"						{printf("found LOR\n"); return LOR;}                               
-"::"						{printf("found SCOPE\n"); return SCOPE;}                           
-".."						{printf("found DESCENDANT\n"); return DESCENDANT;}                 
-"..."						{printf("found REST\n"); return REST;}
-"@"							{printf("found @\n"); return yytext[0];}                           
-">"							{printf("found >\n"); return yytext[0];}                           
-"<"							{printf("found <\n"); return yytext[0];}                           
-"&"							{printf("found &\n"); return yytext[0];}                           
-"^"							{printf("found ^\n"); return yytext[0];}                           
-"~"							{printf("found ~\n"); return yytext[0];}                           
-"|"							{printf("found |\n"); return yytext[0];}                           
-"!"							{printf("found !\n"); return yytext[0];}                           
-";"							{printf("found ;\n"); return yytext[0];}                           
-","							{printf("found ,\n"); return yytext[0];}                           
-"{"							{printf("found {\n"); return yytext[0];}                           
-"}"							{printf("found }\n"); return yytext[0];}                           
-"("							{printf("found (\n"); return yytext[0];}                           
-")"							{printf("found )\n"); return yytext[0];}                           
-"["							{printf("found [\n"); return yytext[0];}                           
-"]"							{printf("found ]\n"); return yytext[0];}                           
-"="							{printf("found =\n"); return yytext[0];}                           
-":"							{printf("found :\n"); return yytext[0];}                           
-"+"							{printf("found +\n"); return yytext[0];}                           
-"-"							{printf("found -\n"); return yytext[0];}                           
-"*"							{printf("found *\n"); return yytext[0];}                           
-"/"							{printf("found /\n"); return yytext[0];}                           
-"."							{printf("found .\n"); return yytext[0];}                           
-"?"							{printf("found ?\n"); return yytext[0];}                           
- \t                                                                                            
-\n|\r|\r\n					{yylineno++;}
+<MSTRING>. 					{count(); *s++ = *yytext;}
+as							{start(); count(); return AS;}
+case						{start(); count(); return CASE;}
+catch						{start(); count(); return CATCH;}
+class 						{start(); count(); return CLASS;}
+default						{start(); count(); return DEFAULT;}
+delete						{start(); count(); return DELETE;}
+do							{start(); count(); return DO;}
+dynamic						{start(); count(); return DYNAMIC;}
+each						{start(); count(); return EACH;}
+else						{start(); count(); return ELSE;}
+extends						{start(); count(); return EXTENDS;}
+false						{start(); count(); return T_FALSE;}
+for							{start(); count(); return FOR;}
+function					{start(); count(); return FUNCTION;}
+generator					{start(); count(); return GENERATOR;}
+get							{start(); count(); return GET;}
+if							{start(); count(); return IF;}
+implements					{start(); count(); return IMPLEMENTS;}
+import						{start(); count(); return IMPORT;}
+in							{start(); count(); return IN;}
+include						{start(); count(); return INCLUDE;}
+instanceof					{start(); count(); return INSTANCEOF;}
+internal					{start(); count(); return INTERNAL;}
+is							{start(); count(); return IS;}
+let							{start(); count(); return LET;}
+like						{start(); count(); return LIKE;}
+namespace					{start(); count(); return NAMESPACE;}
+new							{start(); count(); return NEW;}
+null						{start(); count(); return ASNULL;}
+override					{start(); count(); return OVERRIDE;}
+package						{start(); count(); return PACKAGE;}
+private 					{start(); count(); return PRIVATE;}
+protected					{start(); count(); return PROTECTED;}
+public 						{start(); count(); return PUBLIC;}
+return 						{start(); count(); return RETURN;}
+set							{start(); count(); return SET;}
+standard					{start(); count(); return STANDARD;}
+static						{start(); count(); return STATIC;}
+strict						{start(); count(); return STRICT;}
+super						{start(); count(); return SUPER;}
+switch						{start(); count(); return SWITCH;}
+this						{start(); count(); return THIS;}
+true						{start(); count(); return T_TRUE;}
+try							{start(); count(); return TRY;}
+type						{start(); count(); return TYPE;}
+typeof						{start(); count(); return TYPEOF;}
+undefined					{start(); count(); return UNDEFINED;}
+use							{start(); count(); return USE;}
+var							{start(); count(); return VAR;}
+void						{start(); count(); return VOID;}
+while						{start(); count(); return WHILE;}
+with						{start(); count(); return WITH;}
+yield						{start(); count(); return YIELD;}
+__proto__					{start(); count(); return PROTO;}
+[a-zA-Z_$][a-zA-Z0-9_$]*	{start(); count(); yylval.nodeValue = [IdentifierNode identifierNodeWithCString:yytext]; return IDENT;}
+-?[0-9]*\.[0-9]+			{start(); count(); return NUMBER;}
+0[xX]([0-9A-Fa-f])+			{start(); count(); return HEX;}
+[0-9]+						{start(); count(); return UINT;}
+\-?[0-9]+					{start(); count(); return INT;}
+"++"						{start(); count(); return INCREMENT;}
+"--"						{start(); count(); return DECREMENT;}
+"%"							{start(); count(); return yytext[0];}
+"+="						{start(); count(); return ADDASN;}
+"/="						{start(); count(); return DIVASN;}
+"%="						{start(); count(); return MODASN;}
+"*="						{start(); count(); return MULASN;}
+"-="						{start(); count(); return SUBASN;}
+"&="						{start(); count(); return BANDASN;}
+"^="						{start(); count(); return XORASN;}
+"|="						{start(); count(); return BORASN;}
+"&&="						{start(); count(); return LANDASN;}
+"||="						{start(); count(); return LORASN;}
+"<<"						{start(); count(); return BWLSHIFT;}
+"<<="						{start(); count(); return BWLSHIFTASN;}
+">>="						{start(); count(); return BWRSHIFTASN;}
+">>>="						{start(); count(); return BWURSHIFTASN;}
+">>"						{start(); count(); return BWRSHIFT;}
+">>>"						{start(); count(); return BWURSHIFT;}
+"=="						{start(); count(); return EQ;}
+"<="						{start(); count(); return LTE;}
+">="						{start(); count(); return GTE;}
+"!="						{start(); count(); return NE;}
+"!=="						{start(); count(); return SNE;}
+"==="						{start(); count(); return SEQ;}
+"&&"						{start(); count(); return LAND;}
+"||"						{start(); count(); return LOR;}
+"::"						{start(); count(); return SCOPE;}
+".."						{start(); count(); return DESCENDANT;}
+"..."						{start(); count(); return REST;}
+"@"							{start(); count(); return yytext[0];}
+">"							{start(); count(); return yytext[0];}
+"<"							{start(); count(); return yytext[0];}
+"&"							{start(); count(); return yytext[0];}
+"^"							{start(); count(); return yytext[0];}
+"~"							{start(); count(); return yytext[0];}
+"|"							{start(); count(); return yytext[0];}
+"!"							{start(); count(); return yytext[0];}
+";"							{start(); count(); return yytext[0];}
+","							{start(); count(); return yytext[0];}
+"{"							{start(); count(); return yytext[0];}
+"}"							{start(); count(); return yytext[0];}
+"("							{start(); count(); return yytext[0];}
+")"							{start(); count(); return yytext[0];}
+"["							{start(); count(); return yytext[0];}
+"]"							{start(); count(); return yytext[0];}
+"="							{start(); count(); return yytext[0];}
+":"							{start(); count(); return yytext[0];}
+"+"							{start(); count(); return yytext[0];}
+"-"							{start(); count(); return yytext[0];}
+"*"							{start(); count(); return yytext[0];}
+"/"							{start(); count(); return yytext[0];}
+"."							{start(); count(); return yytext[0];}
+"?"							{start(); count(); return yytext[0];}
+ \t                         {start(); count();}
+\n|\r|\r\n					{start(); count(); yylineno++;}
 %%
 
-void yyerror(char *s) 
+void yyerror(char *s)
 {
 	extern Node* yyLastParsedNode;  
 	if (yyLastParsedNode != nil) 
@@ -198,7 +194,8 @@ void yyerror(char *s)
 		yyLastParsedNode = nil;
 	}
 	// raise syntax error
-	[NSException raise:@"LexSyntaxError" format:@"%s",s];
+	[NSException raise:@"LexSyntaxError" format:@"ERROR: (LINE: %ld, COLUMN: %ld): %s. Unexpected %s\n", 
+		(long)line, (long)column, s, yytext];
 }
 
 int yywrap() 
@@ -209,4 +206,43 @@ int yywrap()
 void yyreset_state()
 {
 	BEGIN(INITIAL);
+	line = 1;
+	column = 1;
+	charnum = 1;
+}
+
+void start()
+{
+	line_start = line;
+	col_start = column;
+	charnum_start = charnum;
+}
+
+void count()
+{
+    int i;
+    for (i = 0; yytext[i] != '\0'; i++)
+    {
+        if (yytext[i] == '\n')
+        {
+            line++;
+            column = 0;
+            charnum++;
+        }
+        else if (yytext[i] == '\t')
+        {
+            column += 4 - (column % 4);
+            charnum++;
+        }
+        else
+        {
+            column++;
+            charnum++;
+        }
+    }
+
+//	yylloc.first_line   = line_start;
+//	yylloc.first_column = col_start;
+//	yylloc.last_line    = line;
+//	yylloc.last_column  = column;
 }
