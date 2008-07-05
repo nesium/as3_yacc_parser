@@ -11,10 +11,11 @@
 
 @interface Controller : NSObject 
 {
-
+	IBOutlet NSTextField *m_label;
 }
 
 - (IBAction)openFile:(id)sender;
+- (IBAction)dropView_change:(id)sender;
 - (void)parseFile:(NSString *)filename;
 
 @end
