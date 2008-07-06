@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C518D770E1FF39400B16942 /* ast.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C518D760E1FF39400B16942 /* ast.m */; };
+		2C518E5D0E1FFD0F00B16942 /* FunctionNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C518E5C0E1FFD0F00B16942 /* FunctionNode.m */; };
+		2C518E620E1FFF3400B16942 /* ListNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C518E610E1FFF3400B16942 /* ListNode.m */; };
+		2C518E650E20029A00B16942 /* AccessLevelNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C518E640E20029A00B16942 /* AccessLevelNode.m */; };
+		2C518E6D0E2004CC00B16942 /* AttributeNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C518E6C0E2004CC00B16942 /* AttributeNode.m */; };
+		2C518ED00E202C3D00B16942 /* VariableNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C518ECF0E202C3D00B16942 /* VariableNode.m */; };
+		2C518EE90E20376D00B16942 /* ArgumentNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C518EE80E20376D00B16942 /* ArgumentNode.m */; };
 		2C63850E0E157D0D00D7229C /* as3p.lm in Sources */ = {isa = PBXBuildFile; fileRef = 2C63850C0E157D0D00D7229C /* as3p.lm */; };
 		2C63850F0E157D0D00D7229C /* as3p.ym in Sources */ = {isa = PBXBuildFile; fileRef = 2C63850D0E157D0D00D7229C /* as3p.ym */; };
 		2C6385150E157FCD00D7229C /* Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6385140E157FCD00D7229C /* Parser.m */; };
@@ -33,6 +40,21 @@
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		2C518D750E1FF39400B16942 /* ast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ast.h; sourceTree = "<group>"; };
+		2C518D760E1FF39400B16942 /* ast.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ast.m; sourceTree = "<group>"; };
+		2C518E5B0E1FFD0F00B16942 /* FunctionNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionNode.h; sourceTree = "<group>"; };
+		2C518E5C0E1FFD0F00B16942 /* FunctionNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionNode.m; sourceTree = "<group>"; };
+		2C518E600E1FFF3400B16942 /* ListNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListNode.h; sourceTree = "<group>"; };
+		2C518E610E1FFF3400B16942 /* ListNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListNode.m; sourceTree = "<group>"; };
+		2C518E630E20029A00B16942 /* AccessLevelNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccessLevelNode.h; sourceTree = "<group>"; };
+		2C518E640E20029A00B16942 /* AccessLevelNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccessLevelNode.m; sourceTree = "<group>"; };
+		2C518E6B0E2004CC00B16942 /* AttributeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttributeNode.h; sourceTree = "<group>"; };
+		2C518E6C0E2004CC00B16942 /* AttributeNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttributeNode.m; sourceTree = "<group>"; };
+		2C518ECE0E202C3D00B16942 /* VariableNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VariableNode.h; sourceTree = "<group>"; };
+		2C518ECF0E202C3D00B16942 /* VariableNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VariableNode.m; sourceTree = "<group>"; };
+		2C518EE70E20376D00B16942 /* ArgumentNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArgumentNode.h; sourceTree = "<group>"; };
+		2C518EE80E20376D00B16942 /* ArgumentNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArgumentNode.m; sourceTree = "<group>"; };
+		2C518EF30E2039DC00B16942 /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
 		2C63850C0E157D0D00D7229C /* as3p.lm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; path = as3p.lm; sourceTree = "<group>"; };
 		2C63850D0E157D0D00D7229C /* as3p.ym */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = as3p.ym; sourceTree = "<group>"; };
 		2C6385130E157FCD00D7229C /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Parser.h; sourceTree = "<group>"; };
@@ -166,6 +188,9 @@
 			children = (
 				2C63850C0E157D0D00D7229C /* as3p.lm */,
 				2C63850D0E157D0D00D7229C /* as3p.ym */,
+				2C518D750E1FF39400B16942 /* ast.h */,
+				2C518D760E1FF39400B16942 /* ast.m */,
+				2C518EF30E2039DC00B16942 /* types.h */,
 			);
 			path = parser;
 			sourceTree = "<group>";
@@ -187,6 +212,18 @@
 				2CD2CD210E198AEB00D89C80 /* QualifiedIdentifierNode.m */,
 				2CD2CD6B0E19903E00D89C80 /* ImportNode.h */,
 				2CD2CD6C0E19903E00D89C80 /* ImportNode.m */,
+				2C518E5B0E1FFD0F00B16942 /* FunctionNode.h */,
+				2C518E5C0E1FFD0F00B16942 /* FunctionNode.m */,
+				2C518E600E1FFF3400B16942 /* ListNode.h */,
+				2C518E610E1FFF3400B16942 /* ListNode.m */,
+				2C518E630E20029A00B16942 /* AccessLevelNode.h */,
+				2C518E640E20029A00B16942 /* AccessLevelNode.m */,
+				2C518E6B0E2004CC00B16942 /* AttributeNode.h */,
+				2C518E6C0E2004CC00B16942 /* AttributeNode.m */,
+				2C518ECE0E202C3D00B16942 /* VariableNode.h */,
+				2C518ECF0E202C3D00B16942 /* VariableNode.m */,
+				2C518EE70E20376D00B16942 /* ArgumentNode.h */,
+				2C518EE80E20376D00B16942 /* ArgumentNode.m */,
 			);
 			path = ast;
 			sourceTree = "<group>";
@@ -269,6 +306,13 @@
 				2CD2CD220E198AEB00D89C80 /* QualifiedIdentifierNode.m in Sources */,
 				2CD2CD6D0E19903E00D89C80 /* ImportNode.m in Sources */,
 				2C88DBF00E1AD39F001ADA63 /* DropView.m in Sources */,
+				2C518D770E1FF39400B16942 /* ast.m in Sources */,
+				2C518E5D0E1FFD0F00B16942 /* FunctionNode.m in Sources */,
+				2C518E620E1FFF3400B16942 /* ListNode.m in Sources */,
+				2C518E650E20029A00B16942 /* AccessLevelNode.m in Sources */,
+				2C518E6D0E2004CC00B16942 /* AttributeNode.m in Sources */,
+				2C518ED00E202C3D00B16942 /* VariableNode.m in Sources */,
+				2C518EE90E20376D00B16942 /* ArgumentNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

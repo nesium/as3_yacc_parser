@@ -17,4 +17,6 @@
 
 @property (retain) QualifiedIdentifierNode *value;
 
++ (ImportNode *)importNodeWithQualifiedIdentifierNode:(QualifiedIdentifierNode *)node;
+
 @end

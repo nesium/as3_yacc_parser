@@ -5,8 +5,8 @@
 #import "Node.h"
 #import "PackageNode.h"
 #import "QualifiedIdentifierNode.h"
-#import "ImportNode.h"
 #import "ClassNode.h"
+#include "ast.h"
 
 #define YYDEBUG 1
 
@@ -143,6 +143,13 @@ extern int yyYYINPUT(char *buffer, int maxSize);
 %type <nodeValue> import_statement
 %type <nodeValue> qualified_identifier
 %type <nodeValue> class_definition
+%type <nodeValue> access_level
+%type <nodeValue> attribute
+%type <nodeValue> method_definition
+%type <nodeValue> return_type
+%type <nodeValue> argument_list
+%type <nodeValue> argument
+%type <nodeValue> IDENT
 
 %%
 
@@ -170,7 +177,7 @@ package_statement
 	;
 	
 import_statement
-	: IMPORT qualified_identifier ';' {$$ = yyLastParsedNode = [ImportNode importNodeWithQualifiedIdentifierNode:$2];}
+	: IMPORT qualified_identifier ';' {$$ = makeImport($2);}
 	| IMPORT qualified_identifier '.' '*'
 	;
 	
@@ -210,19 +217,29 @@ class_statement
 	;
 
 property_definition
-	: class_property_attribute VAR parameter
-	| class_property_attribute VAR parameter ';'
-	| class_property_attribute STATIC VAR parameter
-	| class_property_attribute STATIC VAR parameter ';'
+	: access_level attribute initialiser_attribute parameter
+	| access_level attribute initialiser_attribute parameter ';'
 	;
 
-class_property_attribute
-	: /* empty */
-	| INTERNAL
-	| PRIVATE
-	| PROTECTED
-	| PUBLIC
-	| STATIC
+initialiser_attribute
+	: VAR
+	| CONST
+	;
+
+attribute
+	: /* empty */	{$$ = nil;}
+	| DYNAMIC		{$$ = makeAttribute(kDynamicAttribute);}
+	| FINAL			{$$ = makeAttribute(kFinalAttribute);}
+	| OVERRIDE		{$$ = makeAttribute(kOverrideAttribute);}
+	| STATIC		{$$ = makeAttribute(kStaticAttribute);}
+	;
+	
+access_level
+	: /* empty */	{$$ = makeAccessLevel(kUndefinedAccess);}
+	| PRIVATE		{$$ = makeAccessLevel(kPrivateAccess);}
+	| PUBLIC		{$$ = makeAccessLevel(kPublicAccess);}
+	| PROTECTED		{$$ = makeAccessLevel(kProtectedAccess);}
+	| INTERNAL		{$$ = makeAccessLevel(kInternalAccess);}
 	;
 	
 opt_override
@@ -231,13 +248,20 @@ opt_override
 	;
 
 method_definition
-	: class_property_attribute opt_override FUNCTION identifier '(' ')' compound_statement
-	| class_property_attribute opt_override FUNCTION identifier '(' ')' return_type compound_statement
-	| class_property_attribute opt_override FUNCTION identifier '(' argument_list ')' compound_statement
-	| class_property_attribute opt_override FUNCTION identifier '(' argument_list ')' return_type compound_statement
-	| class_property_attribute opt_override FUNCTION GET identifier '(' ')' return_type compound_statement
-	| class_property_attribute opt_override FUNCTION SET identifier '(' argument_list ')' compound_statement
-	| class_property_attribute opt_override FUNCTION SET identifier '(' argument_list ')' ':' VOID compound_statement
+	: access_level attribute FUNCTION identifier '(' ')' compound_statement
+		{$$ = makeFunction($1, $2, $4, nil, nil, NO, NO);}
+	| access_level attribute FUNCTION identifier '(' ')' return_type compound_statement
+		{$$ = makeFunction($1, $2, $4, nil, $7, NO, NO);}
+	| access_level attribute FUNCTION identifier '(' argument_list ')' compound_statement
+		{$$ = makeFunction($1, $2, $4, $6, nil, NO, NO);}
+	| access_level attribute FUNCTION identifier '(' argument_list ')' return_type compound_statement
+		{$$ = makeFunction($1, $2, $4, $6, $8, NO, NO);}
+	| access_level attribute FUNCTION GET identifier '(' ')' return_type compound_statement
+		{$$ = makeFunction($1, $2, $5, nil, $8, NO, YES);}
+	| access_level attribute FUNCTION SET identifier '(' argument_list ')' compound_statement
+		{$$ = makeFunction($1, $2, $5, $7, nil, YES, NO);}
+	| access_level attribute FUNCTION SET identifier '(' argument_list ')' ':' VOID compound_statement
+		{$$ = makeFunction($1, $2, $5, $7, nil, YES, NO);} // @TODO: respect void ret type
 	;
 
 array_construction
@@ -265,19 +289,22 @@ object_argument_list
 	;
 	
 argument_list
-	: argument
-	| argument_list ',' argument
+	: argument						{$$ = makeList($1);}
+	| argument_list ',' argument	{$$ = makeList($1, $3);}
 	;
 	
 argument
-	: identifier initialization
-	| identifier ':' qualified_identifier initialization
-	| REST identifier /* TODO: ensure that rest is the last param */
+	: IDENT initialization
+		{$$ = makeArgument($1, nil, NO);}
+	| IDENT ':' qualified_identifier initialization
+		{$$ = makeArgument($1, $3, NO);}
+	| REST IDENT /* @TODO: ensure that rest is the last param */
+		{$$ = makeArgument($2, nil, YES);}
 	;
 	
 return_type
 	: ':' qualified_identifier
-	| ':' VOID
+	| ':' VOID						{$$ = nil;}
 	;
 
 identifier

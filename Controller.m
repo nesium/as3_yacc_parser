@@ -40,9 +40,9 @@
 		Node *ast = [[Parser sharedParser] parse:str];
 		NSLog(@"%@", ast);
 	}
-	@catch(NSException* exception)
+	@catch(NSException *exception)
 	{
-		NSLog(@"An error occured while parsing file %@", filename);
+		NSLog(@"[%@]\n%@", filename, [exception reason]);
 	}	
 }
 

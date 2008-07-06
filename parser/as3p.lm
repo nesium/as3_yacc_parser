@@ -73,6 +73,7 @@ as							{start(); count(); return AS;}
 case						{start(); count(); return CASE;}
 catch						{start(); count(); return CATCH;}
 class 						{start(); count(); return CLASS;}
+const 						{start(); count(); return CONST;}
 default						{start(); count(); return DEFAULT;}
 delete						{start(); count(); return DELETE;}
 do							{start(); count(); return DO;}

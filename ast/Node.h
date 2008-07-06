@@ -9,7 +9,8 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface Node : NSObject {
+@interface Node : NSObject 
+{
 
 }
 
