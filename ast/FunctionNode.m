@@ -38,7 +38,7 @@
 - (NSString *)description
 {
 	return [NSString stringWithFormat:@"[FunctionNode] accessLevel: %@, attribute: %@, name: %@,\
-		returnType: %@", [m_accessLevel stringValue], [m_attribute stringValue], 
+returnType: %@", [m_accessLevel stringValue], [m_attribute stringValue], 
 		[m_identifier string], [m_returnType string]];
 }
 

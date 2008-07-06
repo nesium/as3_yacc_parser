@@ -18,12 +18,15 @@
 #import "ListNode.h"
 #import "VariableNode.h"
 #import "ArgumentNode.h"
+#import "ClassNode.h"
 
-Node* makeImport(Node *package);
-Node* makeFunction(Node *accessLevel, Node *attribute, Node *ident, Node *arguments, 
+Node * makeImport(Node *package);
+Node * makeFunction(Node *accessLevel, Node *attribute, Node *ident, Node *arguments, 
 	Node *returnType, BOOL isSetter, BOOL isGetter);
-Node* makeAccessLevel(AccessLevel level);
-Node* makeAttribute(AttributeType type);
-Node* makeList(Node *node, ...);
-Node* makeVariable(Node *name, Node *type, Node *accessLevel, BOOL isStatic);
-Node* makeArgument(Node *name, Node *type, BOOL isRest);
+Node * makeAccessLevel(AccessLevel level);
+Node * makeAttribute(AttributeType type);
+Node * makeList(Node *node, ...);
+Node * makeVariable(Node *name, Node *type, Node *accessLevel, BOOL isStatic);
+Node * makeArgument(Node *name, Node *type, BOOL isRest);
+Node * makeClassAttribute(ClassAttributeType type);
+Node * makeQualifiedIdentifier(Node *ident, ...);

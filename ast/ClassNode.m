@@ -11,12 +11,27 @@
 
 @implementation ClassNode
 
-+ (ClassNode *)classNodeWithIdentifier:(IdentifierNode *)identifier
+@synthesize attribute=m_attribute;
+@synthesize name=m_name;
+@synthesize ancestor=m_ancestor;
+@synthesize interfaces=m_interfaces;
+
++ (ClassNode *)classNodeWithAttribute:(ClassAttributeNode *)attribute name:(IdentifierNode *)name 
+	ancestor:(IdentifierNode *)ancestor interfaces:(ListNode *)interfaces;
 {
 	ClassNode *node = [[[ClassNode alloc] init] autorelease];
-	[node setValue:[identifier string] forKey:@"m_value"];
+	node.attribute = attribute;
+	node.name = name;
+	node.ancestor = ancestor;
+	node.interfaces = interfaces;
 	NSLog(@"%@", node);
 	return node;
+}
+
+- (NSString *)description
+{
+	return [NSString stringWithFormat:@"[ClassNode] attribute: %@, name: %@, ancestor: %@, \
+interfaces: %@", m_attribute, m_name, m_ancestor, m_interfaces];
 }
 
 @end

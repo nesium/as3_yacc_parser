@@ -56,4 +56,9 @@
 	return node;
 }
 
+- (NSString *)description
+{
+	return [NSString stringWithFormat:@"[ListNode] %@", m_nodes];
+}
+
 @end

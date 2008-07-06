@@ -9,12 +9,12 @@
 
 #include "ast.h"
 
-Node* makeImport(Node *package)
+Node * makeImport(Node *package)
 {
 	return [ImportNode importNodeWithQualifiedIdentifierNode:(QualifiedIdentifierNode *)package];
 }
 
-Node* makeFunction(Node *accessLevel, Node *attribute, Node *ident, Node *arguments, 
+Node * makeFunction(Node *accessLevel, Node *attribute, Node *ident, Node *arguments, 
 	Node *returnType, BOOL isSetter, BOOL isGetter)
 {
 	FunctionNode *node = [FunctionNode functionNodeWithIdentifier:(IdentifierNode *)ident 
@@ -27,17 +27,17 @@ Node* makeFunction(Node *accessLevel, Node *attribute, Node *ident, Node *argume
 	return node;
 }
 
-Node* makeAccessLevel(AccessLevel level)
+Node * makeAccessLevel(AccessLevel level)
 {
 	return [AccessLevelNode accessLevelNodeWithType:level];
 }
 
-Node* makeAttribute(AttributeType type)
+Node * makeAttribute(AttributeType type)
 {
 	return [AttributeNode attributeNodeWithType:type];
 }
 
-Node* makeList(Node *node, ...)
+Node * makeList(Node *node, ...)
 {
 	if (!node) return [[[ListNode alloc] init] autorelease];
 	va_list arguments;
@@ -62,7 +62,7 @@ Node* makeList(Node *node, ...)
 	return node;
 }
 
-Node* makeVariable(Node *name, Node *type, Node *accessLevel, BOOL isStatic)
+Node * makeVariable(Node *name, Node *type, Node *accessLevel, BOOL isStatic)
 {
 	VariableNode *node = [VariableNode variableNodeWithName:(IdentifierNode *)name 
 		type:(QualifiedIdentifierNode *)type 
@@ -71,10 +71,51 @@ Node* makeVariable(Node *name, Node *type, Node *accessLevel, BOOL isStatic)
 	return node;
 }
 
-Node* makeArgument(Node *name, Node *type, BOOL isRest)
+Node * makeArgument(Node *name, Node *type, BOOL isRest)
 {
 	ArgumentNode *node = [ArgumentNode argumentNodeWithName:(IdentifierNode *)name 
 		type:(QualifiedIdentifierNode *)type];
 	node.isRest = isRest;
 	return node;
+}
+
+Node * makeClass(Node *attribute, Node *name, Node *ancestor, Node *interfaces)
+{
+	ClassNode *clazz = [ClassNode classNodeWithAttribute:(ClassAttributeNode *)attribute
+		name:(IdentifierNode *)name ancestor:(IdentifierNode *)ancestor 
+		interfaces:(ListNode *)interfaces];
+	return clazz;
+}
+
+Node * makeClassAttribute(ClassAttributeType type)
+{
+	return [ClassAttributeNode classAttributeNodeWithType:type];
+}
+
+Node * makeQualifiedIdentifier(Node *ident, ...)
+{
+	if (!ident) return [[[QualifiedIdentifierNode alloc] init] autorelease];
+	va_list arguments;
+	Node *obj;
+	va_start(arguments, ident);
+	NSMutableString *string = [[NSMutableString alloc] init];
+	if (![ident isKindOfClass:[QualifiedIdentifierNode class]])
+	{
+		[string appendString:[(IdentifierNode *)ident string]];
+	}
+	while (obj = va_arg(arguments, id))
+	{
+		[string appendFormat:@".%@", [(IdentifierNode *)obj string]];
+	}
+	va_end(arguments);
+	if (![ident isKindOfClass:[QualifiedIdentifierNode class]])
+	{
+		ident = [[[QualifiedIdentifierNode alloc] initWithString:string] autorelease];
+	}
+	else
+	{
+		[(QualifiedIdentifierNode *)ident appendString:string];
+	}
+	[string release];
+	return ident;	
 }

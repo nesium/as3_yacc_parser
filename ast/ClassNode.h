@@ -9,13 +9,24 @@
 #import <Cocoa/Cocoa.h>
 #import "StringNode.h"
 #import "IdentifierNode.h"
+#import "ListNode.h"
+#import "ClassAttributeNode.h"
 
 
 @interface ClassNode : StringNode 
 {
-
+	ClassAttributeNode *m_attribute;
+	IdentifierNode *m_name;
+	IdentifierNode *m_ancestor;
+	ListNode *m_interfaces;
 }
 
-+ (ClassNode *)classNodeWithIdentifier:(IdentifierNode *)identifier;
+@property (retain) ClassAttributeNode *attribute;
+@property (retain) IdentifierNode *name;
+@property (retain) IdentifierNode *ancestor;
+@property (retain) ListNode *interfaces;
+
++ (ClassNode *)classNodeWithAttribute:(ClassAttributeNode *)attribute name:(IdentifierNode *)name 
+	ancestor:(IdentifierNode *)ancestor interfaces:(ListNode *)interfaces;
 
 @end

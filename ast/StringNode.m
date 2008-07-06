@@ -25,6 +25,13 @@
 	return self;
 }
 
+- (id)initWithString:(NSString *)string
+{
+	self = [super init];
+	m_value = [string mutableCopy];
+	return self;
+}
+
 - (id)initWithQuotedCString:(const char *)cString
 {
 	self = [super init];
@@ -35,6 +42,11 @@
 		[(NSMutableString *)m_value deleteCharactersInRange:NSMakeRange([m_value length] - 1, 1)];
 	}
 	return self;
+}
+
+- (void)appendString:(NSString *)string
+{
+	[m_value appendString:string];
 }
 
 - (void)dealloc 
@@ -56,11 +68,6 @@
 + (StringNode *)stringNodeWithQuotedCString:(const char *)cString 
 {
 	return [[[StringNode alloc] initWithQuotedCString:cString] autorelease];
-}
-
-- (NSObject *)evaluateWithDictionary:(NSDictionary *)theDictionary
-{
-	return m_value;
 }
 
 - (NSString *)description

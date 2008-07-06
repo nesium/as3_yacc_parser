@@ -16,8 +16,10 @@
 }
 
 - (NSString *)string;
+- (void)appendString:(NSString *)string;
 - (id)initWithCString:(const char *)cString;
 - (id)initWithQuotedCString:(const char *)cString;
+- (id)initWithString:(NSString *)string;
 + (StringNode *)stringNodeWithCString:(const char *)cString;
 + (StringNode *)stringNodeWithQuotedCString:(const char *)cString;
 

@@ -21,3 +21,10 @@ typedef enum {
 	kOverrideAttribute,
 	kStaticAttribute
 } AttributeType;
+
+typedef enum {
+	kClassDynamicAttribute,
+	kClassFinalAttribute,
+	kClassInternalAttribute,
+	kClassPublicAttribute
+} ClassAttributeType;
