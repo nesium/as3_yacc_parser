@@ -34,16 +34,21 @@
 
 - (void)parseFile:(NSString *)filename
 {
+	LNCStopwatch *stopwatch = [[LNCStopwatch alloc] init];
 	NSString *str = [NSString stringWithContentsOfFile:filename];
+	[stopwatch start];
 	@try
 	{
 		Node *ast = [[Parser sharedParser] parse:str];
-		NSLog(@"%@", ast);
+		//NSLog(@"%@", ast);
 	}
 	@catch(NSException *exception)
 	{
 		NSLog(@"[%@]\n%@", filename, [exception reason]);
-	}	
+	}
+	[stopwatch stop];
+	NSLog(@"---> parsing of file %@ took %f seconds", filename, [stopwatch elapsedSeconds]);
+	[stopwatch release];
 }
 
 - (IBAction)dropView_change:(id)sender
@@ -59,7 +64,6 @@
 		{
 			continue;
 		}
-		NSLog(@"parsing file %@ ...", file);
 		[self parseFile:[path stringByAppendingPathComponent:file]];
 	}
 }

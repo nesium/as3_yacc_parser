@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C3D2FDC0E22C75500DCD77A /* LNCStopwatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3D2FDB0E22C75500DCD77A /* LNCStopwatch.m */; };
 		2C518D770E1FF39400B16942 /* ast.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C518D760E1FF39400B16942 /* ast.m */; };
 		2C518E5D0E1FFD0F00B16942 /* FunctionNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C518E5C0E1FFD0F00B16942 /* FunctionNode.m */; };
 		2C518E620E1FFF3400B16942 /* ListNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C518E610E1FFF3400B16942 /* ListNode.m */; };
@@ -41,6 +42,8 @@
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		2C3D2FDA0E22C75500DCD77A /* LNCStopwatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LNCStopwatch.h; sourceTree = "<group>"; };
+		2C3D2FDB0E22C75500DCD77A /* LNCStopwatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LNCStopwatch.m; sourceTree = "<group>"; };
 		2C518D750E1FF39400B16942 /* ast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ast.h; sourceTree = "<group>"; };
 		2C518D760E1FF39400B16942 /* ast.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ast.m; sourceTree = "<group>"; };
 		2C518E5B0E1FFD0F00B16942 /* FunctionNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionNode.h; sourceTree = "<group>"; };
@@ -115,6 +118,8 @@
 				2C63854F0E158BA100D7229C /* Controller.m */,
 				2C88DBEE0E1AD39F001ADA63 /* DropView.h */,
 				2C88DBEF0E1AD39F001ADA63 /* DropView.m */,
+				2C3D2FDA0E22C75500DCD77A /* LNCStopwatch.h */,
+				2C3D2FDB0E22C75500DCD77A /* LNCStopwatch.m */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -319,6 +324,7 @@
 				2C518ED00E202C3D00B16942 /* VariableNode.m in Sources */,
 				2C518EE90E20376D00B16942 /* ArgumentNode.m in Sources */,
 				2C518F9D0E204ED300B16942 /* ClassAttributeNode.m in Sources */,
+				2C3D2FDC0E22C75500DCD77A /* LNCStopwatch.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

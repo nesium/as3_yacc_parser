@@ -31,7 +31,6 @@
 	node.identifier = ident;
 	node.arguments = arguments;
 	node.returnType = returnType;
-	NSLog(@"%@", node);
 	return node;
 }
 

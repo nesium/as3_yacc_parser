@@ -24,7 +24,6 @@
 	node.name = name;
 	node.ancestor = ancestor;
 	node.interfaces = interfaces;
-	NSLog(@"%@", node);
 	return node;
 }
 

@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "Parser.h"
+#import "LNCStopwatch.h"
 
 @interface Controller : NSObject 
 {

@@ -225,7 +225,7 @@ property_definition
 	: access_level initialiser_attribute parameter
 	| access_level STATIC initialiser_attribute parameter
 	| STATIC access_level initialiser_attribute parameter
-	| access_level attribute initialiser_attribute parameter ';'
+	| access_level initialiser_attribute parameter ';'
 	| access_level STATIC initialiser_attribute parameter ';'
 	| STATIC access_level initialiser_attribute parameter ';'
 	;

@@ -18,7 +18,6 @@
 {
 	ImportNode *importNode = [[[ImportNode alloc] init] autorelease];
 	[importNode setValue:node];
-	NSLog(@"%@", importNode);
 	return importNode;
 }
 

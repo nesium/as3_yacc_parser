@@ -20,7 +20,6 @@
 	ArgumentNode *node = [[[ArgumentNode alloc] init] autorelease];
 	node.name = name;
 	node.type = type;
-	NSLog(@"%@", node);
 	return node;
 }
 
