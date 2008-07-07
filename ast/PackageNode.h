@@ -7,14 +7,16 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "StringNode.h"
+#import "Node.h"
 #import "IdentifierNode.h"
 
 
-@interface PackageNode : StringNode
+@interface PackageNode : Node
 {
-
+	IdentifierNode *m_identifier;
 }
+
+@property (retain) IdentifierNode *identifier;
 
 + (PackageNode *)packageNodeWithIdentifier:(IdentifierNode *)identifier;
 

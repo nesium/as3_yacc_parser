@@ -15,6 +15,7 @@
 @synthesize type=m_type;
 @synthesize accessLevel=m_accessLevel;
 @synthesize isStatic=m_isStatic;
+@synthesize isConst=m_isConst;
 
 + (VariableNode *)variableNodeWithName:(IdentifierNode *)name type:(QualifiedIdentifierNode *)type
 	accessLevel:(AccessLevelNode *)accessLevel

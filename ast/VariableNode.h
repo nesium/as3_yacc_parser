@@ -19,12 +19,14 @@
 	QualifiedIdentifierNode *m_type;
 	AccessLevelNode *m_accessLevel;
 	BOOL m_isStatic;
+	BOOL m_isConst;
 }
 
 @property (retain) IdentifierNode *name;
 @property (retain) QualifiedIdentifierNode *type;
 @property (retain) AccessLevelNode *accessLevel;
 @property (assign) BOOL isStatic;
+@property (assign) BOOL isConst;
 
 + (VariableNode *)variableNodeWithName:(IdentifierNode *)name type:(QualifiedIdentifierNode *)type
 	accessLevel:(AccessLevelNode *)accessLevel;

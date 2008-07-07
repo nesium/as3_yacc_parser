@@ -11,10 +11,12 @@
 
 @implementation PackageNode
 
+@synthesize identifier=m_identifier;
+
 + (PackageNode *)packageNodeWithIdentifier:(IdentifierNode *)identifier
 {
 	PackageNode *node = [[[PackageNode alloc] init] autorelease];
-	[node setValue:[identifier string] forKey:@"m_value"];
+	node.identifier = identifier;
 	return node;
 }
 

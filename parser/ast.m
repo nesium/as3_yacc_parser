@@ -62,12 +62,13 @@ Node * makeList(Node *node, ...)
 	return node;
 }
 
-Node * makeVariable(Node *name, Node *type, Node *accessLevel, BOOL isStatic)
+Node * makeVariable(Node *name, Node *type, Node *accessLevel, BOOL isStatic, BOOL isConst)
 {
 	VariableNode *node = [VariableNode variableNodeWithName:(IdentifierNode *)name 
 		type:(QualifiedIdentifierNode *)type 
 		accessLevel:(AccessLevelNode *)accessLevel];
 	node.isStatic = isStatic;
+	node.isConst = isConst;
 	return node;
 }
 
@@ -118,4 +119,9 @@ Node * makeQualifiedIdentifier(Node *ident, ...)
 	}
 	[string release];
 	return ident;	
+}
+
+Node * makePackage(Node *ident)
+{
+	return [PackageNode packageNodeWithIdentifier:(IdentifierNode *)ident];
 }
