@@ -20,7 +20,7 @@ void count();
 
 %}
 
-%x COMMENT MSTRING
+%x COMMENT MSTRING REGEXP
 
 %%
 
@@ -92,6 +92,7 @@ import						{start(); count(); return IMPORT;}
 in							{start(); count(); return IN;}
 include						{start(); count(); return INCLUDE;}
 instanceof					{start(); count(); return INSTANCEOF;}
+interface					{start(); count(); return INTERFACE;}
 internal					{start(); count(); return INTERNAL;}
 is							{start(); count(); return IS;}
 let							{start(); count(); return LET;}
@@ -112,6 +113,7 @@ strict						{start(); count(); return STRICT;}
 super						{start(); count(); return SUPER;}
 switch						{start(); count(); return SWITCH;}
 this						{start(); count(); return THIS;}
+throw						{start(); count(); return THROW;}
 true						{start(); count(); return T_TRUE;}
 try							{start(); count(); return TRY;}
 type						{start(); count(); return TYPE;}
@@ -127,8 +129,7 @@ __proto__					{start(); count(); return PROTO;}
 [a-zA-Z_$][a-zA-Z0-9_$]*	{start(); count(); yylval.nodeValue = [IdentifierNode identifierNodeWithCString:yytext]; return IDENT;}
 -?[0-9]*\.[0-9]+			{start(); count(); return NUMBER;}
 0[xX]([0-9A-Fa-f])+			{start(); count(); return HEX;}
-[0-9]+						{start(); count(); return UINT;}
-\-?[0-9]+					{start(); count(); return INT;}
+[0-9]+						{start(); count(); return INT;}
 "++"						{start(); count(); return INCREMENT;}
 "--"						{start(); count(); return DECREMENT;}
 "%"							{start(); count(); return yytext[0];}

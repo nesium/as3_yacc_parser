@@ -40,14 +40,15 @@
 	@try
 	{
 		Node *ast = [[Parser sharedParser] parse:str];
-		//NSLog(@"%@", ast);
+		NSLog(@"%@", ast);
 	}
 	@catch(NSException *exception)
 	{
 		NSLog(@"[%@]\n%@", filename, [exception reason]);
 	}
 	[stopwatch stop];
-	NSLog(@"---> parsing of file %@ took %f seconds", filename, [stopwatch elapsedSeconds]);
+	NSLog(@"---> parsing of file %@ took %f seconds", [filename lastPathComponent], 
+		[stopwatch elapsedSeconds]);
 	[stopwatch release];
 }
 
@@ -56,6 +57,16 @@
 	NSString *path = [sender path];
 	[m_label setStringValue:[path lastPathComponent]];
 	NSFileManager *fm = [NSFileManager defaultManager];
+	
+	BOOL isDir;
+	if ([fm fileExistsAtPath:path isDirectory:&isDir] && !isDir)
+	{
+		if (![[path pathExtension] isEqualToString:@"as"])
+			return;
+		[self parseFile:path];
+		return;
+	}
+	
 	NSArray *files = [fm subpathsAtPath:path];
 	NSString *file;
 	for (file in files)
@@ -66,6 +77,13 @@
 		}
 		[self parseFile:[path stringByAppendingPathComponent:file]];
 	}
+}
+
+- (IBAction)reload:(id)sender
+{
+	if ([m_dropView path] == nil)
+		return;
+	[self dropView_change:m_dropView];
 }
 
 @end

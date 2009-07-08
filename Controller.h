@@ -9,14 +9,17 @@
 #import <Cocoa/Cocoa.h>
 #import "Parser.h"
 #import "LNCStopwatch.h"
+#import "DropView.h"
 
 @interface Controller : NSObject 
 {
 	IBOutlet NSTextField *m_label;
+	IBOutlet DropView *m_dropView;
 }
 
 - (IBAction)openFile:(id)sender;
 - (IBAction)dropView_change:(id)sender;
 - (void)parseFile:(NSString *)filename;
+- (IBAction)reload:(id)sender;
 
 @end

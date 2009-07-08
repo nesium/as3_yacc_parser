@@ -14,6 +14,9 @@ Node *yyLastParsedNode = nil;
 extern void yyerror(char *s);
 extern int yylex();
 extern int yyYYINPUT(char *buffer, int maxSize);
+extern int line;
+extern char *yytext;
+int yydebug = 0;
 
 %}
 
@@ -126,7 +129,6 @@ extern int yyYYINPUT(char *buffer, int maxSize);
 %token TRY
 %token TYPE
 %token TYPEOF
-%token UINT
 %token UNDEFINED
 %token USE
 %token VAR
@@ -143,6 +145,7 @@ extern int yyYYINPUT(char *buffer, int maxSize);
 %type <nodeValue> qualified_identifier
 %type <nodeValue> class_definition
 %type <nodeValue> access_level
+%type <nodeValue> method_access_level
 %type <nodeValue> attribute
 %type <nodeValue> method_definition
 %type <nodeValue> return_type
@@ -175,6 +178,7 @@ package_statement_list
 package_statement
 	: class_definition
 	| import_statement
+	| USE NAMESPACE qualified_identifier ';'
 	;
 	
 import_statement
@@ -222,24 +226,18 @@ class_statement
 	;
 
 property_definition
-	: access_level initialiser_attribute parameter
-	| access_level STATIC initialiser_attribute parameter
-	| STATIC access_level initialiser_attribute parameter
-	| access_level initialiser_attribute parameter ';'
-	| access_level STATIC initialiser_attribute parameter ';'
-	| STATIC access_level initialiser_attribute parameter ';'
-	;
-
-initialiser_attribute
-	: VAR
-	| CONST
+	: access_level variable
+	| access_level STATIC variable
+	| STATIC access_level variable
+	| access_level variable ';'
+	| access_level STATIC variable ';'
+	| STATIC access_level variable ';'
 	;
 
 attribute
 	: /* empty */	{$$ = nil;}
 	| DYNAMIC		{$$ = makeAttribute(kDynamicAttribute);}
 	| FINAL			{$$ = makeAttribute(kFinalAttribute);}
-	| OVERRIDE		{$$ = makeAttribute(kOverrideAttribute);}
 	| STATIC		{$$ = makeAttribute(kStaticAttribute);}
 	;
 	
@@ -251,25 +249,26 @@ access_level /* @TODO: namespace expression */
 	| INTERNAL		{$$ = makeAccessLevel(kInternalAccess);}
 	;
 	
-opt_override
-	: /* empty */ 
-	| OVERRIDE
+method_access_level
+	: OVERRIDE access_level	{$$ = $2;}
+	| access_level OVERRIDE	{$$ = $1;}
+	| access_level			{$$ = $1;}
 	;
 
 method_definition
-	: access_level attribute FUNCTION identifier '(' ')' compound_statement
+	: method_access_level attribute FUNCTION identifier '(' ')' compound_statement
 		{$$ = makeFunction($1, $2, $4, nil, nil, NO, NO);}
-	| access_level attribute FUNCTION identifier '(' ')' return_type compound_statement
+	| method_access_level attribute FUNCTION identifier '(' ')' return_type compound_statement
 		{$$ = makeFunction($1, $2, $4, nil, $7, NO, NO);}
-	| access_level attribute FUNCTION identifier '(' argument_list ')' compound_statement
+	| method_access_level attribute FUNCTION identifier '(' argument_list ')' compound_statement
 		{$$ = makeFunction($1, $2, $4, $6, nil, NO, NO);}
-	| access_level attribute FUNCTION identifier '(' argument_list ')' return_type compound_statement
+	| method_access_level attribute FUNCTION identifier '(' argument_list ')' return_type compound_statement
 		{$$ = makeFunction($1, $2, $4, $6, $8, NO, NO);}
-	| access_level attribute FUNCTION GET identifier '(' ')' return_type compound_statement
+	| method_access_level attribute FUNCTION GET identifier '(' ')' return_type compound_statement
 		{$$ = makeFunction($1, $2, $5, nil, $8, NO, YES);}
-	| access_level attribute FUNCTION SET identifier '(' argument_list ')' compound_statement
+	| method_access_level attribute FUNCTION SET identifier '(' argument_list ')' compound_statement
 		{$$ = makeFunction($1, $2, $5, $7, nil, YES, NO);}
-	| access_level attribute FUNCTION SET identifier '(' argument_list ')' ':' VOID compound_statement
+	| method_access_level attribute FUNCTION SET identifier '(' argument_list ')' ':' VOID compound_statement
 		{$$ = makeFunction($1, $2, $5, $7, nil, YES, NO);} // @TODO: respect void ret type
 	;
 
@@ -307,6 +306,8 @@ argument
 		{$$ = makeArgument($1, nil, NO);}
 	| IDENT ':' qualified_identifier initialization
 		{$$ = makeArgument($1, $3, NO);}
+	| REST IDENT ':' qualified_identifier /* @TODO: ensure that rest is the last param */
+		{$$ = makeArgument($2, nil, YES);}
 	| REST IDENT /* @TODO: ensure that rest is the last param */
 		{$$ = makeArgument($2, nil, YES);}
 	;
@@ -338,7 +339,6 @@ qualified_identifier
 	
 number_literal
 	: NUMBER
-	| UINT
 	| INT
 	| HEX
 	;
@@ -363,11 +363,11 @@ primary_expression
 
 concatenated_braced_expression
 	: braced_expression
-	| concatenated_braced_expression '.' postfix_expression
+	| concatenated_braced_expression '.' expression
 	;
 
 braced_expression
-	: '(' expression ')'
+	: '(' comma_expression ')'
 	| '(' ')'
 	;
 
@@ -401,7 +401,10 @@ postfix_expression
 	| postfix_expression '(' ')'
 	| postfix_expression '(' comma_expression ')'
 	| postfix_expression concatenated_braced_expression
-	| FUNCTION
+	| FUNCTION '(' parameter_list ')' compound_statement
+	| FUNCTION '(' parameter_list ')' return_type compound_statement
+	| FUNCTION '(' ')' compound_statement
+	| FUNCTION '(' ')' return_type compound_statement
 	;
 
 comma_expression
@@ -410,7 +413,8 @@ comma_expression
 	;
 
 parameter
-	: variable initialization
+	: identifier initialization
+	| identifier ':' qualified_identifier
 	;
 	
 basic_parameter_list
@@ -430,11 +434,12 @@ initialization
 	;
 	
 variable
-	: identifier
-	| qualified_identifier
-	| identifier ':' qualified_identifier
-	| VAR identifier
-	| VAR identifier ':' qualified_identifier
+	: identifier initialization
+	| qualified_identifier initialization
+	| VAR identifier initialization
+	| VAR identifier ':' qualified_identifier initialization
+	| CONST identifier initialization
+	| CONST identifier ':' qualified_identifier initialization
 	;
 	
 lvalue_expression
@@ -495,6 +500,7 @@ relational_expression
 	| relational_expression LTE shift_expression
 	| relational_expression GTE shift_expression
 	| relational_expression IS qualified_identifier
+	| relational_expression IN qualified_identifier
 	| relational_expression AS qualified_identifier
 	;
 
@@ -555,6 +561,8 @@ assignment_expression
 	| lvalue_expression BANDASN assignment_expression
 	| lvalue_expression XORASN assignment_expression
 	| lvalue_expression BORASN assignment_expression
+	| lvalue_expression LORASN assignment_expression
+	| lvalue_expression LANDASN assignment_expression
 	;
 	
 statement
@@ -637,8 +645,8 @@ catch_list
 
 catch_statement
 	:  CATCH '(' qualified_identifier ')' compound_statement
-	|  CATCH '(' qualified_identifier variable ')' compound_statement
-;
+	|  CATCH '(' parameter ')' compound_statement
+	;
 
 %%
 
