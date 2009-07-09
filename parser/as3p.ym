@@ -33,7 +33,7 @@ int yydebug = 0;
 %token BORASN
 %token EACH
 %token STANDARD
-%token REST
+%token ELLIPSIS
 %token LET
 %token BREAK
 %token BWLSHIFT
@@ -145,7 +145,6 @@ int yydebug = 0;
 %type <nodeValue> qualified_identifier
 %type <nodeValue> class_definition
 %type <nodeValue> access_level
-%type <nodeValue> method_access_level
 %type <nodeValue> attribute
 %type <nodeValue> method_definition
 %type <nodeValue> return_type
@@ -221,17 +220,17 @@ class_statement_list
 	;
 
 class_statement
-	: method_definition
-	| property_definition
+	: OVERRIDE access_level method_definition
+	| access_level OVERRIDE method_definition
+	| access_level method_definition
+	| access_level STATIC property_definition
+	| STATIC access_level property_definition
+	| access_level property_definition
 	;
 
 property_definition
-	: access_level variable
-	| access_level STATIC variable
-	| STATIC access_level variable
-	| access_level variable ';'
-	| access_level STATIC variable ';'
-	| STATIC access_level variable ';'
+	: variable
+	| variable ';'
 	;
 
 attribute
@@ -248,28 +247,18 @@ access_level /* @TODO: namespace expression */
 	| PROTECTED		{$$ = makeAccessLevel(kProtectedAccess);}
 	| INTERNAL		{$$ = makeAccessLevel(kInternalAccess);}
 	;
-	
-method_access_level
-	: OVERRIDE access_level	{$$ = $2;}
-	| access_level OVERRIDE	{$$ = $1;}
-	| access_level			{$$ = $1;}
-	;
 
 method_definition
-	: method_access_level attribute FUNCTION identifier '(' ')' compound_statement
-		{$$ = makeFunction($1, $2, $4, nil, nil, NO, NO);}
-	| method_access_level attribute FUNCTION identifier '(' ')' return_type compound_statement
-		{$$ = makeFunction($1, $2, $4, nil, $7, NO, NO);}
-	| method_access_level attribute FUNCTION identifier '(' argument_list ')' compound_statement
-		{$$ = makeFunction($1, $2, $4, $6, nil, NO, NO);}
-	| method_access_level attribute FUNCTION identifier '(' argument_list ')' return_type compound_statement
-		{$$ = makeFunction($1, $2, $4, $6, $8, NO, NO);}
-	| method_access_level attribute FUNCTION GET identifier '(' ')' return_type compound_statement
-		{$$ = makeFunction($1, $2, $5, nil, $8, NO, YES);}
-	| method_access_level attribute FUNCTION SET identifier '(' argument_list ')' compound_statement
-		{$$ = makeFunction($1, $2, $5, $7, nil, YES, NO);}
-	| method_access_level attribute FUNCTION SET identifier '(' argument_list ')' ':' VOID compound_statement
-		{$$ = makeFunction($1, $2, $5, $7, nil, YES, NO);} // @TODO: respect void ret type
+	: attribute FUNCTION identifier '(' ')' return_type compound_statement
+		{$$ = makeFunction(nil, $1, $3, nil, $6, NO, NO);}
+	| attribute FUNCTION identifier '(' argument_list ')' return_type compound_statement
+		{$$ = makeFunction(nil, $1, $3, $5, $7, NO, NO);}
+	| attribute FUNCTION GET identifier '(' ')' return_type compound_statement
+		{$$ = makeFunction(nil, $1, $4, nil, $7, NO, YES);}
+	| attribute FUNCTION SET identifier '(' argument_list ')' compound_statement
+		{$$ = makeFunction(nil, $1, $4, $6, nil, YES, NO);}
+	| attribute FUNCTION SET identifier '(' argument_list ')' ':' VOID compound_statement
+		{$$ = makeFunction(nil, $1, $4, $6, nil, YES, NO);} // @TODO: respect void ret type
 	;
 
 array_construction
@@ -306,14 +295,15 @@ argument
 		{$$ = makeArgument($1, nil, NO);}
 	| IDENT ':' qualified_identifier initialization
 		{$$ = makeArgument($1, $3, NO);}
-	| REST IDENT ':' qualified_identifier /* @TODO: ensure that rest is the last param */
+	| ELLIPSIS IDENT ':' qualified_identifier /* @TODO: ensure that rest is the last param */
 		{$$ = makeArgument($2, nil, YES);}
-	| REST IDENT /* @TODO: ensure that rest is the last param */
+	| ELLIPSIS IDENT /* @TODO: ensure that rest is the last param */
 		{$$ = makeArgument($2, nil, YES);}
 	;
 	
 return_type
-	: ':' qualified_identifier
+	: /* empty */					{$$ = nil;}
+	| ':' qualified_identifier		{$$ = $2;}
 	| ':' VOID						{$$ = nil;}
 	;
 
@@ -425,7 +415,7 @@ basic_parameter_list
 parameter_list
 	: /* empty */
 	| basic_parameter_list
-	| basic_parameter_list REST
+	| basic_parameter_list ELLIPSIS
 	;
 	
 initialization

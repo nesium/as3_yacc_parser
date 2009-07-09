@@ -159,7 +159,7 @@ __proto__					{start(); count(); return PROTO;}
 "||"						{start(); count(); return LOR;}
 "::"						{start(); count(); return SCOPE;}
 ".."						{start(); count(); return DESCENDANT;}
-"..."						{start(); count(); return REST;}
+"..."						{start(); count(); return ELLIPSIS;}
 "@"							{start(); count(); return yytext[0];}
 ">"							{start(); count(); return yytext[0];}
 "<"							{start(); count(); return yytext[0];}
