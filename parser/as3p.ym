@@ -147,6 +147,7 @@ int yydebug = 0;
 %type <nodeValue> access_level
 %type <nodeValue> attribute
 %type <nodeValue> method_definition
+%type <nodeValue> interface_method_definition
 %type <nodeValue> return_type
 %type <nodeValue> argument_list
 %type <nodeValue> argument
@@ -157,7 +158,20 @@ int yydebug = 0;
 %%
 
 program
-	: package_definition
+	: /* empty */
+	| package_definition
+	| package_definition program_list
+	;
+
+program_list
+	: program_entry
+	| program_list program_entry
+	;
+
+program_entry
+	: class_definition
+	| interface_definition
+	| import_statement
 	;
 	
 package_definition
@@ -176,6 +190,7 @@ package_statement_list
 	
 package_statement
 	: class_definition
+	| interface_definition
 	| import_statement
 	| USE NAMESPACE qualified_identifier ';'
 	;
@@ -227,6 +242,49 @@ class_statement
 	| STATIC access_level property_definition
 	| access_level property_definition
 	;
+	
+interface_definition
+	: interface_attribute INTERFACE identifier interface_body
+	| interface_attribute INTERFACE identifier EXTENDS interface_extension_list interface_body
+	;
+	
+interface_extension_list
+	: qualified_identifier
+	| interface_extension_list ',' qualified_identifier
+	;
+	
+interface_attribute
+	: /* empty */ 
+	| PUBLIC
+	| INTERNAL
+	;
+	
+interface_body
+	: '{' '}'
+	| '{' interface_statement_list '}'
+	;
+	
+interface_statement_list
+	: interface_statement
+	| interface_statement_list interface_statement
+	;
+	
+interface_statement
+	: interface_method_definition
+	| interface_method_definition ';'
+	;
+	
+interface_method_definition
+	: attribute FUNCTION identifier '(' ')' return_type
+		{$$ = makeFunction(nil, $1, $3, nil, $6, NO, NO);}
+	| attribute FUNCTION identifier '(' argument_list ')' return_type
+		{$$ = makeFunction(nil, $1, $3, $5, $7, NO, NO);}
+	| attribute FUNCTION GET identifier '(' ')' return_type
+		{$$ = makeFunction(nil, $1, $4, nil, $7, NO, YES);}
+	| attribute FUNCTION SET identifier '(' argument_list ')'
+		{$$ = makeFunction(nil, $1, $4, $6, nil, YES, NO);}
+	| attribute FUNCTION SET identifier '(' argument_list ')' ':' VOID
+		{$$ = makeFunction(nil, $1, $4, $6, nil, YES, NO);} // @TODO: respect void ret type
 
 property_definition
 	: variable
@@ -240,12 +298,13 @@ attribute
 	| STATIC		{$$ = makeAttribute(kStaticAttribute);}
 	;
 	
-access_level /* @TODO: namespace expression */
+access_level
 	: /* empty */	{$$ = makeAccessLevel(kUndefinedAccess);}
 	| PRIVATE		{$$ = makeAccessLevel(kPrivateAccess);}
 	| PUBLIC		{$$ = makeAccessLevel(kPublicAccess);}
 	| PROTECTED		{$$ = makeAccessLevel(kProtectedAccess);}
 	| INTERNAL		{$$ = makeAccessLevel(kInternalAccess);}
+	| IDENT			{$$ = nil;} /* namespace */
 	;
 
 method_definition
@@ -388,6 +447,7 @@ postfix_expression
 	| NEW postfix_expression
 	| array_construction
 	| object_construction
+	| STRING '.' postfix_expression
 	| postfix_expression '(' ')'
 	| postfix_expression '(' comma_expression ')'
 	| postfix_expression concatenated_braced_expression
@@ -395,6 +455,7 @@ postfix_expression
 	| FUNCTION '(' parameter_list ')' return_type compound_statement
 	| FUNCTION '(' ')' compound_statement
 	| FUNCTION '(' ')' return_type compound_statement
+	| TYPEOF qualified_identifier
 	;
 
 comma_expression
@@ -492,6 +553,7 @@ relational_expression
 	| relational_expression IS qualified_identifier
 	| relational_expression IN qualified_identifier
 	| relational_expression AS qualified_identifier
+	| relational_expression INSTANCEOF qualified_identifier
 	;
 
 equality_expression

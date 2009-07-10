@@ -66,7 +66,7 @@ void count();
 <MSTRING>\n 				{
 								yylineno++;
 								printf("found invalid string!\n");
-								exit(0);
+								//exit(0);
 							}
 <MSTRING>. 					{count(); *s++ = *yytext;}
 as							{start(); count(); return AS;}
@@ -82,6 +82,7 @@ each						{start(); count(); return EACH;}
 else						{start(); count(); return ELSE;}
 extends						{start(); count(); return EXTENDS;}
 false						{start(); count(); return T_FALSE;}
+final						{start(); count(); return FINAL;}
 for							{start(); count(); return FOR;}
 function					{start(); count(); return FUNCTION;}
 generator					{start(); count(); return GENERATOR;}

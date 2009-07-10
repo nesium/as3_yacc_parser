@@ -40,15 +40,15 @@
 	@try
 	{
 		Node *ast = [[Parser sharedParser] parse:str];
-		NSLog(@"%@", ast);
+		//NSLog(@"%@", ast);
 	}
 	@catch(NSException *exception)
 	{
 		NSLog(@"[%@]\n%@", filename, [exception reason]);
 	}
 	[stopwatch stop];
-	NSLog(@"---> parsing of file %@ took %f seconds", [filename lastPathComponent], 
-		[stopwatch elapsedSeconds]);
+	//NSLog(@"---> parsing of file %@ took %f seconds", [filename lastPathComponent], 
+	//	[stopwatch elapsedSeconds]);
 	[stopwatch release];
 }
 

@@ -17,7 +17,7 @@ Node * makeImport(Node *package)
 Node * makeFunction(Node *accessLevel, Node *attribute, Node *ident, Node *arguments, 
 	Node *returnType, BOOL isSetter, BOOL isGetter)
 {
-	NSLog(@"%@:%@", ident, returnType);
+//	NSLog(@"%@:%@", ident, returnType);
 	FunctionNode *node = [FunctionNode functionNodeWithIdentifier:(IdentifierNode *)ident 
 		accessLevel:(AccessLevelNode *)accessLevel 
 		attribute:(AttributeNode *)attribute
