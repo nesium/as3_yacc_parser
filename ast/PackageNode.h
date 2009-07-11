@@ -9,15 +9,17 @@
 #import <Cocoa/Cocoa.h>
 #import "Node.h"
 #import "IdentifierNode.h"
+#import "ListNode.h"
 
 
 @interface PackageNode : Node
 {
 	IdentifierNode *m_identifier;
+	ListNode *m_statements;
 }
-
 @property (retain) IdentifierNode *identifier;
+@property (retain) ListNode *statements;
 
-+ (PackageNode *)packageNodeWithIdentifier:(IdentifierNode *)identifier;
-
++ (PackageNode *)packageNodeWithIdentifier:(IdentifierNode *)identifier 
+	statements:(ListNode *)statements;
 @end

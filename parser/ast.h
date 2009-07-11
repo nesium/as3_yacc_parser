@@ -20,6 +20,7 @@
 #import "ArgumentNode.h"
 #import "ClassNode.h"
 #import "PackageNode.h"
+#import "InterfaceNode.h"
 
 Node * makeImport(Node *package);
 Node * makeFunction(Node *accessLevel, Node *attribute, Node *ident, Node *arguments, 
@@ -31,4 +32,4 @@ Node * makeVariable(Node *name, Node *type, Node *accessLevel, BOOL isStatic, BO
 Node * makeArgument(Node *name, Node *type, BOOL isRest);
 Node * makeClassAttribute(ClassAttributeType type);
 Node * makeQualifiedIdentifier(Node *ident, ...);
-Node * makePackage(Node *ident);
+Node * makePackage(Node *ident, Node *statements);

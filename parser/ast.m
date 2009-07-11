@@ -89,6 +89,13 @@ Node * makeClass(Node *attribute, Node *name, Node *ancestor, Node *interfaces)
 	return clazz;
 }
 
+Node * makeInterface(Node *attribute, Node *name, Node *ancestors)
+{
+	InterfaceNode *node = [InterfaceNode interfaceNodeWithAttribute:(ClassAttributeNode *)attribute 
+		name:(IdentifierNode *)name ancestors:(ListNode *)ancestors];
+	return node;
+}
+
 Node * makeClassAttribute(ClassAttributeType type)
 {
 	return [ClassAttributeNode classAttributeNodeWithType:type];
@@ -122,7 +129,8 @@ Node * makeQualifiedIdentifier(Node *ident, ...)
 	return ident;	
 }
 
-Node * makePackage(Node *ident)
+Node * makePackage(Node *ident, Node *statements)
 {
-	return [PackageNode packageNodeWithIdentifier:(IdentifierNode *)ident];
+	return [PackageNode packageNodeWithIdentifier:(IdentifierNode *)ident 
+		statements:(ListNode *)statements];
 }

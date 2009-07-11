@@ -139,11 +139,18 @@ int yydebug = 0;
 %token XORASN
 %token YIELD
 
+%type <nodeValue> program
 %type <nodeValue> package_definition
+%type <nodeValue> package_statement_list
+%type <nodeValue> package_statement
+%type <nodeValue> package_body
 %type <nodeValue> identifier
 %type <nodeValue> import_statement
 %type <nodeValue> qualified_identifier
 %type <nodeValue> class_definition
+%type <nodeValue> interface_definition
+%type <nodeValue> interface_attribute
+%type <nodeValue> interface_extension_list
 %type <nodeValue> access_level
 %type <nodeValue> attribute
 %type <nodeValue> method_definition
@@ -159,8 +166,8 @@ int yydebug = 0;
 
 program
 	: /* empty */
-	| package_definition
-	| package_definition program_list
+	| package_definition						{$$ = $1; yyLastParsedNode = $$;}
+	| package_definition program_list			{$$ = $1; yyLastParsedNode = $$;}
 	;
 
 program_list
@@ -175,24 +182,25 @@ program_entry
 	;
 	
 package_definition
-	: PACKAGE qualified_identifier package_body	{$$ = makePackage($2);}
+	: PACKAGE qualified_identifier package_body	{$$ = makePackage($2, $3);}
+	| PACKAGE package_body						{$$ = makePackage(nil, $2);}
 	;
 
 package_body
-	: '{' '}'
-	| '{' package_statement_list '}'
+	: '{' '}'									{$$ = nil;}
+	| '{' package_statement_list '}'			{$$ = $2;}
 	;
 	
 package_statement_list
-	: package_statement
-	| package_statement_list package_statement
+	: package_statement							{$$ = $1;}
+	| package_statement_list package_statement	{$$ = $2;}
 	;
 	
 package_statement
-	: class_definition
-	| interface_definition
-	| import_statement
-	| USE NAMESPACE qualified_identifier ';'
+	: class_definition							{$$ = $1;}
+	| interface_definition						{$$ = $1;}
+	| import_statement							{$$ = $1;}
+	| USE NAMESPACE qualified_identifier ';'	{$$ = nil;}
 	;
 	
 import_statement
@@ -245,7 +253,9 @@ class_statement
 	
 interface_definition
 	: interface_attribute INTERFACE identifier interface_body
+		{$$ = makeInterface($1, $3, nil);}
 	| interface_attribute INTERFACE identifier EXTENDS interface_extension_list interface_body
+		{$$ = makeInterface($1, $3, $5);}
 	;
 	
 interface_extension_list
